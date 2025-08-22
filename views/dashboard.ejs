@@ -1,78 +1,383 @@
-<div class="page-header">
-    <h1 class="page-title">Dashboard</h1>
-    <p class="page-subtitle">Welcome back, <%= profile.full_name %>!</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Neumorphism Variables */
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-<% if (error) { %>
-<div class="alert alert-error"><%= error %></div>
-<% } %>
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
 
-<!-- Statistics Cards -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-number" style="color: var(--accent-color);"><%= stats.pending %></div>
-        <div class="stat-label">Pending Tasks</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color: #f59e0b;"><%= stats.in_progress %></div>
-        <div class="stat-label">In Progress</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color: #10b981;"><%= stats.completed %></div>
-        <div class="stat-label">Completed</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color: #ef4444;"><%= stats.overdue %></div>
-        <div class="stat-label">Overdue</div>
-    </div>
-</div>
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-<!-- Welcome Card -->
-<div class="card">
-    <h3 class="card-title">Welcome to Dante Platform</h3>
-    <p style="color: var(--text-secondary); margin: 0;">
-        Your internal team coordination platform is ready! You can manage tasks, schedules, and team activities from here.
-    </p>
-    <% if (isAdmin) { %>
-    <p style="color: var(--accent-color); margin-top: 12px; font-weight: 500;">
-        As an admin, you have access to all platform features including user management and system administration.
-    </p>
-    <% } %>
-</div>
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
 
-<!-- Quick Actions -->
-<div class="card">
-    <h3 class="card-title">Quick Actions</h3>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <a href="/tasks" style="background: var(--accent-color); color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
-            View Tasks
-        </a>
-        <a href="/schedule" style="background: var(--button-bg); color: var(--text-primary); padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
-            Manage Schedule
-        </a>
-        <% if (isAdmin) { %>
-        <a href="/admin" style="background: #10b981; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
-            Admin Panel
-        </a>
-        <% } %>
-    </div>
-</div>
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
 
-<!-- System Status -->
-<div class="card">
-    <h3 class="card-title">System Status</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 4px;">Authentication</div>
-            <div style="color: #10b981; font-size: 14px;">✅ Connected</div>
-        </div>
-        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 4px;">Database</div>
-            <div style="color: #10b981; font-size: 14px;">✅ Online</div>
-        </div>
-        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 4px;">User Role</div>
-            <div style="color: var(--accent-color); font-size: 14px; text-transform: uppercase;"><%= profile.role %></div>
-        </div>
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-raised);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .quick-action-btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            display: inline-block;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .quick-action-btn.secondary {
+            background: var(--button-bg);
+            color: var(--text-primary);
+        }
+
+        .quick-action-btn.admin {
+            background: #10b981;
+        }
+
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .status-item {
+            background: var(--secondary-bg);
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .status-value {
+            font-size: 14px;
+        }
+
+        .status-online {
+            color: #10b981;
+        }
+
+        .status-admin {
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link active">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/team" class="nav-link">Team View</a>
+                    </li>
+                    <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link">Admin Panel</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' ? profile.role : 'member' %></div>
+                <% if (typeof profile !== 'undefined' && profile.team) { %>
+                <div class="user-role"><%= profile.team.name %></div>
+                <% } %>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back, <%= typeof profile !== 'undefined' ? profile.full_name : 'User' %>!</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--accent-color);"><%= typeof stats !== 'undefined' ? stats.pending : 0 %></div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #f59e0b;"><%= typeof stats !== 'undefined' ? stats.in_progress : 0 %></div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #10b981;"><%= typeof stats !== 'undefined' ? stats.completed : 0 %></div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #ef4444;"><%= typeof stats !== 'undefined' ? stats.overdue : 0 %></div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            </div>
+
+            <!-- Welcome Card -->
+            <div class="card">
+                <h3 class="card-title">Welcome to Dante Platform</h3>
+                <p style="color: var(--text-secondary); margin: 0 0 16px 0;">
+                    Your internal team coordination platform is ready! You can manage tasks, schedules, and team activities from here.
+                </p>
+                <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
+                <p style="color: var(--accent-color); margin: 0; font-weight: 500;">
+                    ✨ As an admin, you have access to all platform features including user management and system administration.
+                </p>
+                <% } %>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3 class="card-title">Quick Actions</h3>
+                <div>
+                    <a href="/tasks" class="quick-action-btn">View Tasks</a>
+                    <a href="/schedule" class="quick-action-btn secondary">Manage Schedule</a>
+                    <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
+                    <a href="/admin" class="quick-action-btn admin">Admin Panel</a>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="card">
+                <h3 class="card-title">System Status</h3>
+                <div class="system-status">
+                    <div class="status-item">
+                        <div class="status-title">Authentication</div>
+                        <div class="status-value status-online">✅ Connected</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-title">Database</div>
+                        <div class="status-value status-online">✅ Online</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-title">User Role</div>
+                        <div class="status-value status-admin"><%= typeof profile !== 'undefined' ? profile.role : 'member' %></div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-</div>
+</body>
+</html>
