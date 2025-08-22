@@ -1,0 +1,78 @@
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Welcome back, <%= profile.full_name %>!</p>
+</div>
+
+<% if (error) { %>
+<div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number" style="color: var(--accent-color);"><%= stats.pending %></div>
+        <div class="stat-label">Pending Tasks</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #f59e0b;"><%= stats.in_progress %></div>
+        <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #10b981;"><%= stats.completed %></div>
+        <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color: #ef4444;"><%= stats.overdue %></div>
+        <div class="stat-label">Overdue</div>
+    </div>
+</div>
+
+<!-- Welcome Card -->
+<div class="card">
+    <h3 class="card-title">Welcome to Dante Platform</h3>
+    <p style="color: var(--text-secondary); margin: 0;">
+        Your internal team coordination platform is ready! You can manage tasks, schedules, and team activities from here.
+    </p>
+    <% if (isAdmin) { %>
+    <p style="color: var(--accent-color); margin-top: 12px; font-weight: 500;">
+        As an admin, you have access to all platform features including user management and system administration.
+    </p>
+    <% } %>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <h3 class="card-title">Quick Actions</h3>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="/tasks" style="background: var(--accent-color); color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
+            View Tasks
+        </a>
+        <a href="/schedule" style="background: var(--button-bg); color: var(--text-primary); padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
+            Manage Schedule
+        </a>
+        <% if (isAdmin) { %>
+        <a href="/admin" style="background: #10b981; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; box-shadow: var(--shadow-raised);">
+            Admin Panel
+        </a>
+        <% } %>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="card">
+    <h3 class="card-title">System Status</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 4px;">Authentication</div>
+            <div style="color: #10b981; font-size: 14px;">✅ Connected</div>
+        </div>
+        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 4px;">Database</div>
+            <div style="color: #10b981; font-size: 14px;">✅ Online</div>
+        </div>
+        <div style="background: var(--secondary-bg); padding: 12px; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 4px;">User Role</div>
+            <div style="color: var(--accent-color); font-size: 14px; text-transform: uppercase;"><%= profile.role %></div>
+        </div>
+    </div>
+</div>
