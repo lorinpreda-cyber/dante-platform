@@ -6,84 +6,259 @@ const dashboardController = {
     try {
       const userId = req.user.id;
       const today = moment().format('YYYY-MM-DD');
+      const tomorrow = moment().add(1, 'day').format('YYYY-MM-DD');
+      const nextWeek = moment().add(7, 'days').format('YYYY-MM-DD');
       
-      // Get today's tasks - fix the query
-      const { data: todayTasks, error: tasksError } = await supabase
+      // Get task statistics
+      const { data: allTasks } = await supabase
+        .from('tasks')
+        .select('*')
+        .or(`assigned_to.eq.${userId},created_by.eq.${userId}`);
+
+      const stats = {
+        pending: allTasks?.filter(t => t.status === 'pending').length || 0,
+        in_progress: allTasks?.filter(t => t.status === 'in_progress').length || 0,
+        completed: allTasks?.filter(t => t.status === 'completed').length || 0,
+        overdue: allTasks?.filter(t => t.due_date && moment(t.due_date).isBefore(today) && t.status !== 'completed').length || 0
+      };
+
+      // Get today's tasks
+      const { data: todayTasks } = await supabase
         .from('tasks')
         .select(`
-          *, 
-          created_by_profile:profiles!tasks_created_by_fkey(full_name),
-          assigned_to_profile:profiles!tasks_assigned_to_fkey(full_name)
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name),
+          created_by_profile:profiles!created_by(full_name)
         `)
-        .or(`created_by.eq.${userId},assigned_to.eq.${userId}`)
-        .gte('created_at', `${today}T00:00:00`)
-        .order('created_at', { ascending: false })
+        .or(`assigned_to.eq.${userId},created_by.eq.${userId}`)
+        .eq('due_date', today)
+        .order('created_at', { ascending: false });
+
+      // Get upcoming tasks (next 7 days)
+      const { data: upcomingTasks } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name),
+          created_by_profile:profiles!created_by(full_name)
+        `)
+        .or(`assigned_to.eq.${userId},created_by.eq.${userId}`)
+        .gte('due_date', tomorrow)
+        .lte('due_date', nextWeek)
+        .neq('status', 'completed')
+        .order('due_date', { ascending: true })
         .limit(10);
 
-      // Get ALL tasks for statistics - fix this query
-      const { data: allUserTasks, error: allTasksError } = await supabase
-        .from('tasks')
-        .select('status')
-        .or(`created_by.eq.${userId},assigned_to.eq.${userId}`);
-
-      // Calculate statistics from all tasks
-      let stats = { pending: 0, in_progress: 0, completed: 0, overdue: 0 };
-      if (!allTasksError && allUserTasks) {
-        stats = allUserTasks.reduce((acc, task) => {
-          if (task.status === 'pending') acc.pending++;
-          else if (task.status === 'in_progress') acc.in_progress++;
-          else if (task.status === 'completed') acc.completed++;
-          else if (task.status === 'overdue') acc.overdue++;
-          return acc;
-        }, { pending: 0, in_progress: 0, completed: 0, overdue: 0 });
-      }
-
-      // Get upcoming deadlines
-      const { data: upcomingTasks, error: upcomingError } = await supabase
-        .from('tasks')
+      // Get today's schedule
+      const { data: todaySchedule } = await supabase
+        .from('schedule')
         .select(`
-          *, 
-          created_by_profile:profiles!tasks_created_by_fkey(full_name),
-          assigned_to_profile:profiles!tasks_assigned_to_fkey(full_name)
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name),
+          created_by_profile:profiles!created_by(full_name)
         `)
-        .or(`created_by.eq.${userId},assigned_to.eq.${userId}`)
-        .not('status', 'eq', 'completed')
-        .not('due_date', 'is', null)
-        .gte('due_date', new Date().toISOString())
-        .order('due_date', { ascending: true })
-        .limit(5);
+        .or(`assigned_to.eq.${userId},created_by.eq.${userId}`)
+        .eq('date', today)
+        .order('start_time', { ascending: true });
 
-      console.log('Dashboard Debug:', {
-        userId,
-        today,
-        todayTasksCount: todayTasks?.length || 0,
-        allTasksCount: allUserTasks?.length || 0,
-        stats,
-        todayTasksError: tasksError?.message,
-        allTasksError: allTasksError?.message
-      });
+      // Get active team members
+      const { data: teamMembers } = await supabase
+        .from('profiles')
+        .select('id, full_name, team, is_online')
+        .eq('is_active', true)
+        .neq('id', userId)
+        .order('full_name');
 
       res.render('dashboard', {
+        stats,
         todayTasks: todayTasks || [],
         upcomingTasks: upcomingTasks || [],
-        todaySchedule: [],
-        teamMembers: [],
-        stats,
+        todaySchedule: todaySchedule || [],
+        teamMembers: teamMembers || [],
         moment,
-        error: tasksError?.message || allTasksError?.message
+        error: null
       });
 
     } catch (error) {
       console.error('Dashboard error:', error);
       res.render('dashboard', {
+        stats: { pending: 0, in_progress: 0, completed: 0, overdue: 0 },
         todayTasks: [],
         upcomingTasks: [],
         todaySchedule: [],
         teamMembers: [],
-        stats: { pending: 0, in_progress: 0, completed: 0, overdue: 0 },
         moment,
         error: 'Failed to load dashboard data'
       });
+    }
+  },
+
+  getTasks: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { status = 'all', priority = 'all', assigned = 'all' } = req.query;
+      
+      let query = supabase
+        .from('tasks')
+        .select(`
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name),
+          created_by_profile:profiles!created_by(full_name)
+        `);
+
+      // Apply filters
+      if (status !== 'all') {
+        query = query.eq('status', status);
+      }
+      
+      if (priority !== 'all') {
+        query = query.eq('priority', priority);
+      }
+      
+      if (assigned === 'me') {
+        query = query.eq('assigned_to', userId);
+      } else if (assigned === 'created') {
+        query = query.eq('created_by', userId);
+      } else if (assigned === 'all') {
+        query = query.or(`assigned_to.eq.${userId},created_by.eq.${userId}`);
+      }
+
+      const { data: tasks, error } = await query.order('created_at', { ascending: false });
+      
+      if (error) throw error;
+
+      res.render('tasks', {
+        tasks: tasks || [],
+        filters: { status, priority, assigned },
+        moment,
+        error: null
+      });
+
+    } catch (error) {
+      console.error('Get tasks error:', error);
+      res.render('tasks', {
+        tasks: [],
+        filters: { status: 'all', priority: 'all', assigned: 'all' },
+        moment,
+        error: 'Failed to load tasks'
+      });
+    }
+  },
+
+  getTaskDetails: async (req, res) => {
+    try {
+      const taskId = req.params.id;
+
+      // Get task with related data
+      const { data: task, error } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name),
+          created_by_profile:profiles!created_by(full_name)
+        `)
+        .eq('id', taskId)
+        .single();
+
+      if (error) throw error;
+
+      // Get sub-assignments
+      const { data: subAssignments } = await supabase
+        .from('sub_assignments')
+        .select(`
+          *,
+          assigned_to_profile:profiles!assigned_to(full_name)
+        `)
+        .eq('task_id', taskId)
+        .order('created_at', { ascending: false });
+
+      // Get comments
+      const { data: comments } = await supabase
+        .from('task_comments')
+        .select(`
+          *,
+          author_profile:profiles!author_id(full_name)
+        `)
+        .eq('task_id', taskId)
+        .order('created_at', { ascending: true });
+
+      // Get team members for assignment
+      const { data: teamMembers } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('is_active', true)
+        .order('full_name');
+
+      // Format the data
+      task.assigned_to_name = task.assigned_to_profile?.full_name || null;
+      task.created_by_name = task.created_by_profile?.full_name || 'Unknown';
+      task.sub_assignments = subAssignments?.map(sub => ({
+        ...sub,
+        assigned_to_name: sub.assigned_to_profile?.full_name || null
+      })) || [];
+      task.comments = comments?.map(comment => ({
+        ...comment,
+        author_name: comment.author_profile?.full_name || 'Unknown'
+      })) || [];
+
+      res.render('task-details', {
+        task,
+        teamMembers: teamMembers || [],
+        moment
+      });
+
+    } catch (error) {
+      console.error('Get task details error:', error);
+      res.status(404).render('error', { error: 'Task not found' });
+    }
+  },
+
+  postCompleteTask: async (req, res) => {
+    try {
+      const taskId = req.params.id;
+
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: 'Task marked as completed' });
+
+    } catch (error) {
+      console.error('Complete task error:', error);
+      res.status(500).json({ error: 'Failed to complete task' });
+    }
+  },
+
+  postStatusUpdate: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { message } = req.body;
+
+      if (!message || !message.trim()) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const { error } = await supabase
+        .from('status_updates')
+        .insert({
+          user_id: userId,
+          message: message.trim(),
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      res.json({ success: true, message: 'Status updated successfully' });
+
+    } catch (error) {
+      console.error('Status update error:', error);
+      res.status(500).json({ error: 'Failed to update status' });
     }
   }
 };

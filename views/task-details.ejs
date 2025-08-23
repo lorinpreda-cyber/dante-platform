@@ -24,7 +24,6 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Copy all the same body, sidebar, navigation styles from above */
         body {
             background: var(--primary-bg);
             font-family: 'Source Sans Pro', sans-serif;
@@ -34,115 +33,599 @@
             min-height: 100vh;
         }
 
-        .main-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 250px; background: var(--primary-bg); border-right: 1px solid var(--border-color); box-shadow: var(--shadow-inset); padding: 20px; flex-shrink: 0; }
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; }
-        
-        /* Add all other styles... */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 6px;
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
             font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-content {
+            padding: 0;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background: var(--button-bg);
+            color: var(--text-primary);
+            border-color: var(--button-border);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 16px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge, .priority-badge {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .status-pending { background: #fef3c7; color: #d97706; }
         .status-in_progress { background: #dbeafe; color: #2563eb; }
         .status-completed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #dc2626; }
+        
+        .priority-low { background: #f3f4f6; color: #6b7280; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-high { background: #fecaca; color: #dc2626; }
+        .priority-urgent { background: #dc2626; color: white; }
 
-        .task-meta {
+        .task-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
         }
 
-        .meta-item {
-            background: var(--secondary-bg);
-            padding: 16px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .meta-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .meta-value {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .task-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Same sidebar as above -->
+        <!-- Sidebar -->
         <aside class="sidebar">
-            <!-- Copy sidebar content from create-task.ejs -->
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link active">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/team" class="nav-link">Team View</a>
+                    </li>
+                    <% if (typeof profile !== 'undefined' && profile && profile.role === 'admin') { %>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link">Admin Panel</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' && profile ? profile.role : 'member' %></div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
                 <h1 class="page-title"><%= task.title %></h1>
-                <a href="/tasks" class="btn btn-secondary">← Back to Tasks</a>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span class="status-badge status-<%= task.status %>"><%= task.status.replace('_', ' ').toUpperCase() %></span>
+                    <span class="priority-badge priority-<%= task.priority || 'medium' %>"><%= (task.priority || 'medium').toUpperCase() %></span>
+                    <% if (task.status !== 'completed') { %>
+                    <button onclick="completeTask('<%= task.id %>')" class="btn btn-success">Mark Complete</button>
+                    <% } %>
+                    <button onclick="toggleEditMode()" class="btn btn-primary" id="edit-btn">Edit Task</button>
+                    <a href="/tasks" class="btn btn-secondary">← Back to Tasks</a>
+                </div>
             </div>
 
-            <!-- Task Status and Meta -->
-            <div class="task-meta">
-                <div class="meta-item">
-                    <div class="meta-label">Status</div>
-                    <div class="meta-value">
-                        <span class="status-badge status-<%= task.status %>"><%= task.status.replace('_', ' ') %></span>
+            <div class="task-grid">
+                <!-- Main Content -->
+                <div>
+                    <!-- Task Details Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Task Details</h3>
+                        </div>
+                        <div class="card-content">
+                            <!-- View Mode -->
+                            <div id="view-mode">
+                                <div class="detail-section">
+                                    <label class="detail-label">Title</label>
+                                    <div class="detail-value" id="view-title"><%= task.title %></div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <label class="detail-label">Description</label>
+                                    <div class="detail-value" id="view-description"><%= task.description || 'No description provided' %></div>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <div class="detail-section">
+                                        <label class="detail-label">Priority</label>
+                                        <div class="detail-value">
+                                            <span class="priority-badge priority-<%= task.priority || 'medium' %>" id="view-priority-badge">
+                                                <%= (task.priority || 'medium').toUpperCase() %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-section">
+                                        <label class="detail-label">Due Date</label>
+                                        <div class="detail-value" id="view-due-date">
+                                            <%= task.due_date ? moment(task.due_date).format('MMM DD, YYYY') : 'No due date' %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Edit Mode -->
+                            <div id="edit-mode" style="display: none;">
+                                <form id="edit-form">
+                                    <div class="form-group">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" id="edit-title" class="form-control" value="<%= task.title %>">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Description</label>
+                                        <textarea id="edit-description" class="form-control" rows="4"><%= task.description || '' %></textarea>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Priority</label>
+                                            <select id="edit-priority" class="form-control">
+                                                <option value="low" <%= task.priority === 'low' ? 'selected' : '' %>>Low</option>
+                                                <option value="medium" <%= !task.priority || task.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+                                                <option value="high" <%= task.priority === 'high' ? 'selected' : '' %>>High</option>
+                                                <option value="urgent" <%= task.priority === 'urgent' ? 'selected' : '' %>>Urgent</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label">Due Date</label>
+                                            <input type="date" id="edit-due-date" class="form-control" 
+                                                   value="<%= task.due_date ? moment(task.due_date).format('YYYY-MM-DD') : '' %>">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" onclick="saveTask()" class="btn btn-primary">Save Changes</button>
+                                        <button type="button" onclick="cancelEdit()" class="btn btn-secondary">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="meta-item">
-                    <div class="meta-label">Created By</div>
-                    <div class="meta-value"><%= task.created_by_profile?.full_name || 'Unknown' %></div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">Assigned To</div>
-                    <div class="meta-value"><%= task.assigned_to_profile?.full_name || 'Unassigned' %></div>
-                </div>
-                <% if (task.due_date) { %>
-                <div class="meta-item">
-                    <div class="meta-label">Due Date</div>
-                    <div class="meta-value"><%= moment(task.due_date).format('MMMM DD, YYYY') %></div>
-                </div>
-                <% } %>
-            </div>
 
-            <!-- Task Description -->
-            <% if (task.description) { %>
-            <div class="card">
-                <h3 class="card-title">Description</h3>
-                <p style="line-height: 1.6; margin: 0;"><%= task.description %></p>
-            </div>
-            <% } %>
+                <!-- Sidebar -->
+                <div>
+                    <!-- Task Meta -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Task Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="meta-item">
+                                <strong>Status:</strong>
+                                <span class="status-badge status-<%= task.status %>"><%= task.status.replace('_', ' ').toUpperCase() %></span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <strong>Assigned to:</strong>
+                                <span><%= task.assigned_to_profile?.full_name || 'Unassigned' %></span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <strong>Created by:</strong>
+                                <span><%= task.created_by_profile?.full_name || 'Unknown' %></span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <strong>Created:</strong>
+                                <span><%= moment(task.created_at).format('MMM DD, YYYY HH:mm') %></span>
+                            </div>
+                            
+                            <% if (task.completed_at) { %>
+                            <div class="meta-item">
+                                <strong>Completed:</strong>
+                                <span><%= moment(task.completed_at).format('MMM DD, YYYY HH:mm') %></span>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
 
-            <!-- Actions -->
-            <div class="card">
-                <h3 class="card-title">Actions</h3>
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <% if (task.status !== 'completed') { %>
-                    <button onclick="markCompleted('<%= task.id %>')" class="btn btn-primary">
-                        Mark as Completed
-                    </button>
+                    <!-- Team Members (for reassignment) -->
+                    <% if (teamMembers && teamMembers.length > 0) { %>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Reassign Task</h3>
+                        </div>
+                        <div class="card-content">
+                            <select id="reassign-select" class="form-control" style="margin-bottom: 10px;">
+                                <option value="">Select team member...</option>
+                                <% teamMembers.forEach(member => { %>
+                                <option value="<%= member.id %>" <%= task.assigned_to === member.id ? 'selected' : '' %>>
+                                    <%= member.full_name %>
+                                </option>
+                                <% }); %>
+                            </select>
+                            <button onclick="reassignTask()" class="btn btn-primary btn-sm">Reassign</button>
+                        </div>
+                    </div>
                     <% } %>
-                    <button onclick="editTask()" class="btn">Edit Task</button>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        async function markCompleted(taskId) {
+        let isEditMode = false;
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editBtn = document.getElementById('edit-btn');
+            
+            if (isEditMode) {
+                // Switch to view mode
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                editBtn.textContent = 'Edit Task';
+                isEditMode = false;
+            } else {
+                // Switch to edit mode
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                editBtn.textContent = 'Cancel Edit';
+                isEditMode = true;
+            }
+        }
+
+        function cancelEdit() {
+            toggleEditMode();
+        }
+
+        async function saveTask() {
+            const title = document.getElementById('edit-title').value.trim();
+            const description = document.getElementById('edit-description').value.trim();
+            const priority = document.getElementById('edit-priority').value;
+            const dueDate = document.getElementById('edit-due-date').value;
+
+            if (!title) {
+                alert('Title is required!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/tasks/<%= task.id %>/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        priority,
+                        due_date: dueDate || null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update the view with new values
+                    document.getElementById('view-title').textContent = title;
+                    document.getElementById('view-description').textContent = description || 'No description provided';
+                    
+                    const priorityBadge = document.getElementById('view-priority-badge');
+                    priorityBadge.textContent = priority.toUpperCase();
+                    priorityBadge.className = `priority-badge priority-${priority}`;
+                    
+                    document.getElementById('view-due-date').textContent = dueDate ? 
+                        new Date(dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 
+                        'No due date';
+                    
+                    // Update page title
+                    document.querySelector('.page-title').textContent = title;
+                    document.title = `${title} - Dante Platform`;
+                    
+                    toggleEditMode();
+                    showAlert('Task updated successfully!', 'success');
+                } else {
+                    showAlert('Failed to update task', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Failed to update task', 'error');
+            }
+        }
+
+        async function completeTask(taskId) {
             if (!confirm('Mark this task as completed?')) return;
             
             try {
@@ -154,18 +637,60 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert('Task completed successfully!');
-                    location.reload();
+                    showAlert('Task completed successfully!', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
-                    alert('Failed to complete task');
+                    showAlert('Failed to complete task', 'error');
                 }
             } catch (error) {
-                alert('Failed to complete task');
+                console.error('Error:', error);
+                showAlert('Failed to complete task', 'error');
             }
         }
 
-        function editTask() {
-            alert('Edit functionality coming soon!');
+        async function reassignTask() {
+            const selectedUserId = document.getElementById('reassign-select').value;
+            if (!selectedUserId) {
+                alert('Please select a team member first!');
+                return;
+            }
+
+            if (!confirm('Reassign this task?')) return;
+
+            try {
+                const response = await fetch(`/tasks/<%= task.id %>/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        assigned_to: selectedUserId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Task reassigned successfully!', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showAlert('Failed to reassign task', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Failed to reassign task', 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            // Simple alert for now - you can enhance this later
+            const alertClass = type === 'success' ? '✅' : '❌';
+            alert(`${alertClass} ${message}`);
         }
     </script>
 </body>

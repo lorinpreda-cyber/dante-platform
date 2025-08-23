@@ -6,7 +6,6 @@
     <title>Tasks - Dante Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Include all the same neumorphism styles from dashboard.ejs */
         :root {
             --primary-bg: #e8e8e8;
             --secondary-bg: #f0f0f0;
@@ -24,7 +23,6 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Copy all the same CSS styles from dashboard.ejs */
         body {
             background: var(--primary-bg);
             font-family: 'Source Sans Pro', sans-serif;
@@ -198,6 +196,23 @@
             border-color: var(--accent-color);
         }
 
+        .btn-success {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
         .form-control {
             width: 100%;
             padding: 12px 16px;
@@ -224,6 +239,12 @@
             margin-bottom: 12px;
             box-shadow: var(--shadow-subtle);
             border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
         }
 
         .task-title {
@@ -232,12 +253,37 @@
             font-size: 16px;
         }
 
+        .task-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .task-title a:hover {
+            color: var(--accent-color);
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
         .task-meta {
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
-            margin-top: 8px;
+            margin-top: 12px;
             font-size: 12px;
             color: var(--text-secondary);
+            align-items: center;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .status-badge {
@@ -246,11 +292,57 @@
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
-        .status-pending { background: #fef3c7; color: #d97706; }
-        .status-in_progress { background: #dbeafe; color: #2563eb; }
-        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-pending { 
+            background: #fef3c7; 
+            color: #d97706; 
+        }
+        
+        .status-in_progress { 
+            background: #dbeafe; 
+            color: #2563eb; 
+        }
+        
+        .status-completed { 
+            background: #d1fae5; 
+            color: #065f46; 
+        }
+        
+        .status-cancelled { 
+            background: #fee2e2; 
+            color: #dc2626; 
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .priority-low { 
+            background: #f3f4f6; 
+            color: #6b7280; 
+        }
+        
+        .priority-medium { 
+            background: #fef3c7; 
+            color: #d97706; 
+        }
+        
+        .priority-high { 
+            background: #fecaca; 
+            color: #dc2626; 
+        }
+        
+        .priority-urgent { 
+            background: #dc2626; 
+            color: white; 
+        }
 
         .filters-grid {
             display: grid;
@@ -258,11 +350,70 @@
             gap: 16px;
             align-items: end;
         }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h4 {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            margin: 0 0 20px 0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .overdue-text {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            .task-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .task-actions {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Sidebar (same as dashboard) -->
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="dante-logo">
                 <h1>DANTE</h1>
@@ -283,17 +434,12 @@
                     <li class="nav-item">
                         <a href="/schedule/team" class="nav-link">Team View</a>
                     </li>
-                    <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
-                    <li class="nav-item">
-                        <a href="/admin" class="nav-link">Admin Panel</a>
-                    </li>
-                    <% } %>
                 </ul>
             </nav>
 
             <div class="user-info">
-                <div class="user-name"><%= typeof profile !== 'undefined' ? profile.full_name : 'User' %></div>
-                <div class="user-role"><%= typeof profile !== 'undefined' ? profile.role : 'member' %></div>
+                <div class="user-name">User</div>
+                <div class="user-role">member</div>
                 <form action="/auth/logout" method="POST" style="margin: 0;">
                     <button type="submit" class="logout-btn">Logout</button>
                 </form>
@@ -307,58 +453,99 @@
                 <a href="/tasks/create" class="btn btn-primary">+ Create Task</a>
             </div>
 
+            <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+            <% } %>
+
             <!-- Filters -->
             <div class="card">
                 <h3 class="card-title">Filters</h3>
                 <form method="GET" class="filters-grid">
                     <div>
+                        <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Status</label>
                         <select name="status" class="form-control">
-                            <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
-                            <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                            <option value="in_progress" <%= filters.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
-                            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
                     
                     <div>
-                        <input type="text" name="search" class="form-control" placeholder="Search tasks..." value="<%= filters.search || '' %>">
+                        <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Search</label>
+                        <input type="text" name="search" class="form-control" placeholder="Search tasks...">
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                    </div>
                 </form>
             </div>
 
             <!-- Tasks List -->
             <div class="card">
-                <h3 class="card-title">Tasks (<%= tasks.length %>)</h3>
+                <h3 class="card-title">
+                    Tasks 
+                    <span style="color: var(--text-secondary); font-weight: normal; font-size: 14px;">
+                        (<%= tasks && tasks.length || 0 %> total)
+                    </span>
+                </h3>
                 
-                <% if (tasks.length === 0) { %>
-                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                    <p style="font-size: 18px; margin-bottom: 8px;">No tasks found</p>
-                    <p style="margin: 0;">Create a new task to get started</p>
+                <% if (!tasks || tasks.length === 0) { %>
+                <div class="empty-state">
+                    <h4>No tasks found</h4>
+                    <p>Create a new task to get started!</p>
+                    <a href="/tasks/create" class="btn btn-primary">+ Create First Task</a>
                 </div>
                 <% } else { %>
                 
                 <% tasks.forEach(task => { %>
                 <div class="task-item">
                     <div class="task-title">
-                        <a href="/tasks/<%= task.id %>" style="color: var(--text-primary); text-decoration: none;">
+                        <a href="/tasks/<%= task.id %>">
                             <%= task.title %>
                         </a>
                     </div>
+                    
                     <% if (task.description) { %>
-                    <p style="margin: 8px 0; color: var(--text-secondary); font-size: 14px;">
+                    <div class="task-description">
                         <%= task.description.substring(0, 150) %><%= task.description.length > 150 ? '...' : '' %>
-                    </p>
+                    </div>
                     <% } %>
+                    
                     <div class="task-meta">
-                        <span class="status-badge status-<%= task.status %>"><%= task.status.replace('_', ' ') %></span>
-                        <span>Created: <%= moment(task.created_at).format('MMM DD') %></span>
+                        <span class="status-badge status-<%= task.status %>">
+                            <%= task.status.replace('_', ' ').toUpperCase() %>
+                        </span>
+                        
+                        <% if (task.priority) { %>
+                        <span class="priority-badge priority-<%= task.priority %>">
+                            <%= task.priority.toUpperCase() %>
+                        </span>
+                        <% } %>
+                        
+                        <span>Created: <%= moment(task.created_at).format('MMM DD, YYYY') %></span>
+                        
+                        <% if (task.created_by_profile) { %>
+                        <span>by <%= task.created_by_profile.full_name %></span>
+                        <% } %>
+                        
                         <% if (task.assigned_to_profile) { %>
                         <span>Assigned to: <%= task.assigned_to_profile.full_name %></span>
                         <% } %>
+                        
                         <% if (task.due_date) { %>
-                        <span>Due: <%= moment(task.due_date).format('MMM DD') %></span>
+                        <span>Due: <%= moment(task.due_date).format('MMM DD, YYYY') %></span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="task-actions">
+                        <a href="/tasks/<%= task.id %>" class="btn btn-outline btn-sm">View Details</a>
+                        <% if (task.status !== 'completed') { %>
+                        <button onclick="completeTask('<%= task.id %>')" class="btn btn-success btn-sm">
+                            Mark Complete
+                        </button>
                         <% } %>
                     </div>
                 </div>
@@ -368,5 +555,30 @@
             </div>
         </main>
     </div>
+
+    <script>
+        async function completeTask(taskId) {
+            if (!confirm('Mark this task as completed?')) return;
+            
+            try {
+                const response = await fetch(`/tasks/${taskId}/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Task completed successfully!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert('❌ Failed to complete task');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Failed to complete task');
+            }
+        }
+    </script>
 </body>
 </html>
