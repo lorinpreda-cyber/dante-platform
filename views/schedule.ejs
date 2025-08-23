@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .date-picker {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .date-nav-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .date-nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .current-date {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .time-slot {
+            background: var(--primary-bg);
+            padding: 8px;
+            border-right: 1px solid var(--border-color);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .schedule-slot {
+            background: var(--primary-bg);
+            padding: 8px;
+            min-height: 40px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .schedule-slot:hover {
+            background: var(--secondary-bg);
+        }
+
+        .scheduled-task {
+            background: var(--accent-color);
+            color: var(--text-light);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .scheduled-task.ongoing {
+            background: #10b981;
+        }
+
+        .scheduled-task.busy {
+            background: #ef4444;
+        }
+
+        .scheduled-task.break {
+            background: #f59e0b;
+        }
+
+        .scheduled-task.available {
+            background: #6b7280;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: var(--primary-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ongoing { background: #d1fae5; color: #065f46; }
+        .status-busy { background: #fee2e2; color: #dc2626; }
+        .status-break { background: #fef3c7; color: #d97706; }
+        .status-available { background: #f3f4f6; color: #6b7280; }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .time-grid {
+                grid-template-columns: 60px 1fr;
+            }
+            .date-picker {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/schedule" class="nav-link active">Schedule</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name">User</div>
+                <div class="user-role">member</div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">My Schedule</h1>
+                <button onclick="openCreateModal()" class="btn btn-primary">+ Add Time Block</button>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+            <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+                <%= error %>
+            </div>
+            <% } %>
+
+            <!-- Date Navigation -->
+            <div class="card">
+                <div class="date-picker">
+                    <button class="date-nav-btn" onclick="changeDate(-1)">← Previous</button>
+                    <span class="current-date" id="current-date"><%= moment(selectedDate).format('dddd, MMMM DD, YYYY') %></span>
+                    <button class="date-nav-btn" onclick="changeDate(1)">Next →</button>
+                    <input type="date" id="date-input" class="form-control" value="<%= selectedDate %>" onchange="goToDate()" style="width: auto; margin-left: auto;">
+                </div>
+            </div>
+
+            <!-- Schedule Grid -->
+            <div class="card">
+                <h3 class="card-title">Time Schedule</h3>
+                <div class="time-grid" id="schedule-grid">
+                    <!-- Time slots will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Team Availability -->
+            <div class="card">
+                <h3 class="card-title">Team Availability</h3>
+                <div id="team-schedule">
+                    <% if (teamMembers && teamMembers.length > 0) { %>
+                    <% teamMembers.forEach(member => { %>
+                    <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <strong><%= member.full_name %></strong>
+                        <span class="status-badge status-available">Available</span>
+                    </div>
+                    <% }); %>
+                    <% } else { %>
+                    <p style="color: var(--text-secondary);">No team members to display</p>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Add Time Block</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="scheduled-task-form">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" id="task-title" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="task-description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Time *</label>
+                        <input type="time" id="start-time" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Time *</label>
+                        <input type="time" id="end-time" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="task-status" class="form-control">
+                        <option value="ongoing">Ongoing Work</option>
+                        <option value="busy">Busy/Meeting</option>
+                        <option value="break">Break</option>
+                        <option value="available">Available</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" onclick="saveScheduledTask()" class="btn btn-primary">Save</button>
+                    <button type="button" onclick="closeModal()" class="btn">Cancel</button>
+                    <button type="button" onclick="deleteScheduledTask()" class="btn" style="margin-left: auto; background: #ef4444; color: white; display: none;" id="delete-btn">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <script type="application/json" id="schedule-data">
+        {
+            "currentDate": "<%= selectedDate %>",
+            "scheduledTasks": <% if (scheduledTasks && scheduledTasks.length > 0) { %><%- JSON.stringify(scheduledTasks.map(task => ({
+                id: task.id,
+                title: task.title,
+                description: task.description || '',
+                start_time: task.start_time,
+                end_time: task.end_time,
+                status: task.status,
+                date: task.date
+            }))) %><% } else { %>[]<% } %>
+        }
+    </script>
+
+    <script>
+        // Global variables
+        var currentDate = '';
+        var scheduledTasks = [];
+        var editingTaskId = null;
+
+        // Load data from JSON script tag
+        function loadScheduleData() {
+            try {
+                var dataElement = document.getElementById('schedule-data');
+                var data = JSON.parse(dataElement.textContent);
+                currentDate = data.currentDate;
+                scheduledTasks = data.scheduledTasks || [];
+            } catch (error) {
+                console.error('Error loading schedule data:', error);
+                currentDate = new Date().toISOString().split('T')[0];
+                scheduledTasks = [];
+            }
+        }
+
+        // Generate time grid
+        function generateTimeGrid() {
+            var grid = document.getElementById('schedule-grid');
+            grid.innerHTML = '';
+            
+            for (var hour = 6; hour < 22; hour++) {
+                // Time label
+                var timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = (hour < 10 ? '0' + hour : hour) + ':00';
+                grid.appendChild(timeSlot);
+                
+                // Schedule slot
+                var scheduleSlot = document.createElement('div');
+                scheduleSlot.className = 'schedule-slot';
+                scheduleSlot.setAttribute('data-hour', hour);
+                scheduleSlot.onclick = function() {
+                    openCreateModal(parseInt(this.getAttribute('data-hour')));
+                };
+                
+                // Add scheduled tasks for this hour
+                var tasksInHour = scheduledTasks.filter(function(task) {
+                    if (!task.start_time) return false;
+                    var taskHour = parseInt(task.start_time.split(':')[0]);
+                    return taskHour === hour;
+                });
+                
+                for (var i = 0; i < tasksInHour.length; i++) {
+                    var task = tasksInHour[i];
+                    var taskElement = document.createElement('div');
+                    taskElement.className = 'scheduled-task ' + (task.status || 'ongoing');
+                    taskElement.innerHTML = '<strong>' + (task.title || 'Untitled') + '</strong><br><small>' + (task.start_time || '') + ' - ' + (task.end_time || '') + '</small>';
+                    taskElement.setAttribute('data-task-id', task.id);
+                    taskElement.onclick = function(e) {
+                        e.stopPropagation();
+                        var taskId = this.getAttribute('data-task-id');
+                        var taskToEdit = scheduledTasks.find(function(t) { return t.id === taskId; });
+                        if (taskToEdit) {
+                            editScheduledTask(taskToEdit);
+                        }
+                    };
+                    scheduleSlot.appendChild(taskElement);
+                }
+                
+                grid.appendChild(scheduleSlot);
+            }
+        }
+
+        function openCreateModal(hour) {
+            document.getElementById('modal-title').textContent = 'Add Time Block';
+            document.getElementById('scheduled-task-form').reset();
+            
+            if (hour && hour >= 0) {
+                document.getElementById('start-time').value = (hour < 10 ? '0' + hour : hour) + ':00';
+                document.getElementById('end-time').value = ((hour + 1) < 10 ? '0' + (hour + 1) : (hour + 1)) + ':00';
+            }
+            
+            editingTaskId = null;
+            document.getElementById('delete-btn').style.display = 'none';
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function editScheduledTask(task) {
+            document.getElementById('modal-title').textContent = 'Edit Time Block';
+            document.getElementById('task-title').value = task.title || '';
+            document.getElementById('task-description').value = task.description || '';
+            document.getElementById('start-time').value = task.start_time || '';
+            document.getElementById('end-time').value = task.end_time || '';
+            document.getElementById('task-status').value = task.status || 'ongoing';
+            
+            editingTaskId = task.id;
+            document.getElementById('delete-btn').style.display = 'block';
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            editingTaskId = null;
+        }
+
+        function saveScheduledTask() {
+            var title = document.getElementById('task-title').value.trim();
+            var description = document.getElementById('task-description').value.trim();
+            var startTime = document.getElementById('start-time').value;
+            var endTime = document.getElementById('end-time').value;
+            var status = document.getElementById('task-status').value;
+
+            if (!title || !startTime || !endTime) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert('End time must be after start time');
+                return;
+            }
+
+            var url = editingTaskId ? 
+                '/tasks/schedule/' + editingTaskId + '/update' : 
+                '/tasks/schedule/create';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title,
+                    description: description,
+                    date: currentDate,
+                    start_time: startTime,
+                    end_time: endTime,
+                    status: status
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    alert('✅ Time block ' + (editingTaskId ? 'updated' : 'created') + ' successfully!');
+                    closeModal();
+                    window.location.reload();
+                } else {
+                    alert('❌ ' + (result.error || 'Failed to save time block'));
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('❌ Failed to save time block');
+            });
+        }
+
+        function deleteScheduledTask() {
+            if (!editingTaskId) return;
+            
+            if (!confirm('Are you sure you want to delete this time block?')) return;
+
+            fetch('/tasks/schedule/' + editingTaskId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result.success) {
+                    alert('✅ Time block deleted successfully!');
+                    closeModal();
+                    window.location.reload();
+                } else {
+                    alert('❌ ' + (result.error || 'Failed to delete time block'));
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('❌ Failed to delete time block');
+            });
+        }
+
+        function changeDate(days) {
+            var date = new Date(currentDate);
+            date.setDate(date.getDate() + days);
+            var newDate = date.toISOString().split('T')[0];
+            window.location.href = '?date=' + newDate;
+        }
+
+        function goToDate() {
+            var selectedDate = document.getElementById('date-input').value;
+            if (selectedDate) {
+                window.location.href = '?date=' + selectedDate;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScheduleData();
+            generateTimeGrid();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById('taskModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
