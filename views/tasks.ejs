@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Include all the same neumorphism styles from dashboard.ejs */
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Copy all the same CSS styles from dashboard.ejs */
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .task-item {
+            background: var(--secondary-bg);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+        }
+
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-in_progress { background: #dbeafe; color: #2563eb; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link active">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/team" class="nav-link">Team View</a>
+                    </li>
+                    <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link">Admin Panel</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' ? profile.role : 'member' %></div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Tasks</h1>
+                <a href="/tasks/create" class="btn btn-primary">+ Create Task</a>
+            </div>
+
+            <!-- Filters -->
+            <div class="card">
+                <h3 class="card-title">Filters</h3>
+                <form method="GET" class="filters-grid">
+                    <div>
+                        <select name="status" class="form-control">
+                            <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
+                            <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="in_progress" <%= filters.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <input type="text" name="search" class="form-control" placeholder="Search tasks..." value="<%= filters.search || '' %>">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </form>
+            </div>
+
+            <!-- Tasks List -->
+            <div class="card">
+                <h3 class="card-title">Tasks (<%= tasks.length %>)</h3>
+                
+                <% if (tasks.length === 0) { %>
+                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                    <p style="font-size: 18px; margin-bottom: 8px;">No tasks found</p>
+                    <p style="margin: 0;">Create a new task to get started</p>
+                </div>
+                <% } else { %>
+                
+                <% tasks.forEach(task => { %>
+                <div class="task-item">
+                    <div class="task-title">
+                        <a href="/tasks/<%= task.id %>" style="color: var(--text-primary); text-decoration: none;">
+                            <%= task.title %>
+                        </a>
+                    </div>
+                    <% if (task.description) { %>
+                    <p style="margin: 8px 0; color: var(--text-secondary); font-size: 14px;">
+                        <%= task.description.substring(0, 150) %><%= task.description.length > 150 ? '...' : '' %>
+                    </p>
+                    <% } %>
+                    <div class="task-meta">
+                        <span class="status-badge status-<%= task.status %>"><%= task.status.replace('_', ' ') %></span>
+                        <span>Created: <%= moment(task.created_at).format('MMM DD') %></span>
+                        <% if (task.assigned_to_profile) { %>
+                        <span>Assigned to: <%= task.assigned_to_profile.full_name %></span>
+                        <% } %>
+                        <% if (task.due_date) { %>
+                        <span>Due: <%= moment(task.due_date).format('MMM DD') %></span>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+                
+                <% } %>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -11,6 +11,9 @@ const dashboardRoutes = require('./routes/dashboard');
 const app = express();
 const PORT = process.env.PORT || 3000; // Railway will automatically set PORT
 
+// Import tasks route
+const taskRoutes = require('./routes/tasks');
+
 console.log('🚀 Starting Dante Platform...');
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Port:', PORT);
@@ -61,6 +64,8 @@ app.get('/test', (req, res) => {
 // Routes
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/tasks', taskRoutes);
+
 
 // Root redirect
 app.get('/', (req, res) => {
