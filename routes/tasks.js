@@ -11,13 +11,13 @@ router.get('/', taskController.getTasks);
 router.get('/create', taskController.getCreateTask);
 router.post('/create', taskController.postCreateTask);
 
-// Schedule Routes (must come before /:id routes to avoid conflicts)
+// Schedule Routes (MUST come before /:id routes)
 router.get('/schedule', taskController.getSchedule);
 router.post('/schedule/create', taskController.postCreateScheduledTask);
 router.post('/schedule/:id/update', taskController.postUpdateScheduledTask);
 router.delete('/schedule/:id', taskController.deleteScheduledTask);
 
-// Individual Task Routes (these should come after schedule routes)
+// Individual Task Routes (MUST come after schedule routes)
 router.get('/:id', taskController.getTaskDetails);
 router.post('/:id/update', taskController.postUpdateTask);
 router.post('/:id/complete', taskController.postCompleteTask);
