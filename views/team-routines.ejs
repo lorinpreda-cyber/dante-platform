@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Routines - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
+        }
+
+        .date-picker {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .date-nav-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .date-nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .current-date {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-inset);
+        }
+
+        .routine-timeline {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .time-slot {
+            background: var(--primary-bg);
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .routine-slot {
+            background: var(--primary-bg);
+            padding: 8px;
+            min-height: 40px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .routine-task {
+            background: var(--accent-color);
+            color: var(--text-light);
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px 0;
+            position: relative;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .routine-task.daily {
+            background: #10b981;
+        }
+
+        .routine-task.weekly {
+            background: #f59e0b;
+        }
+
+        .routine-task.single {
+            background: #6b7280;
+        }
+
+        .routine-user {
+            font-weight: 600;
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .day-info {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-left: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .date-picker {
+                flex-wrap: wrap;
+            }
+            .routine-timeline {
+                grid-template-columns: 60px 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/my-routine" class="nav-link">My Routine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/team-routines" class="nav-link active">Team Routines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/schedule" class="nav-link">Schedule</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' && profile ? profile.role : 'member' %></div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Team Routines</h1>
+                <a href="/tasks/my-routine" class="btn btn-secondary">← My Routine</a>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+            <% } %>
+
+            <!-- Date Navigation -->
+            <div class="card">
+                <div class="date-picker">
+                    <button class="date-nav-btn" onclick="changeDate(-1)">← Previous</button>
+                    <span class="current-date" id="current-date"><%= moment(selectedDate).format('dddd, MMMM DD, YYYY') %></span>
+                    <span class="day-info">(Day <%= dayOfWeek + 1 %> of week)</span>
+                    <button class="date-nav-btn" onclick="changeDate(1)">Next →</button>
+                    <input type="date" id="date-input" class="form-control" value="<%= selectedDate %>" onchange="goToDate()" style="width: auto; margin-left: auto;">
+                </div>
+            </div>
+
+            <!-- Team Routines Timeline -->
+            <div class="card">
+                <h3 class="card-title">
+                    Team Availability - <%= moment(selectedDate).format('dddd, MMMM DD') %>
+                    <span style="color: var(--text-secondary); font-weight: normal; font-size: 14px;">
+                        (<%= routines && routines.length || 0 %> routine tasks)
+                    </span>
+                </h3>
+                
+                <% if (!routines || routines.length === 0) { %>
+                <div class="empty-state">
+                    <h4>No team routines for this day</h4>
+                    <p>No team members have routine tasks scheduled for <%= moment(selectedDate).format('MMMM DD, YYYY') %></p>
+                </div>
+                <% } else { %>
+                
+                <div class="routine-timeline" id="routine-timeline">
+                    <!-- Timeline will be generated by JavaScript -->
+                </div>
+                
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <script type="application/json" id="routine-data">
+        {
+            "currentDate": "<%= selectedDate %>",
+            "routines": <% if (routines && routines.length > 0) { %><%- JSON.stringify(routines.map(routine => ({
+                id: routine.id,
+                title: routine.title,
+                description: routine.description || '',
+                start_time: routine.start_time,
+                end_time: routine.end_time,
+                repetition_type: routine.repetition_type,
+                user_name: routine.user_profile?.full_name || 'Unknown User'
+            }))) %><% } else { %>[]<% } %>
+        }
+    </script>
+
+    <script>
+        // Global variables
+        var currentDate = '';
+        var routines = [];
+
+        // Load data from JSON script tag
+        function loadRoutineData() {
+            try {
+                var dataElement = document.getElementById('routine-data');
+                var data = JSON.parse(dataElement.textContent);
+                currentDate = data.currentDate;
+                routines = data.routines || [];
+            } catch (error) {
+                console.error('Error loading routine data:', error);
+                currentDate = new Date().toISOString().split('T')[0];
+                routines = [];
+            }
+        }
+
+        // Generate timeline grid
+        function generateTimeline() {
+            var timeline = document.getElementById('routine-timeline');
+            if (!timeline) return;
+            
+            timeline.innerHTML = '';
+            
+            for (var hour = 6; hour < 22; hour++) {
+                // Time label
+                var timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = (hour < 10 ? '0' + hour : hour) + ':00';
+                timeline.appendChild(timeSlot);
+                
+                // Routine slot
+                var routineSlot = document.createElement('div');
+                routineSlot.className = 'routine-slot';
+                
+                // Add routines for this hour
+                var routinesInHour = routines.filter(function(routine) {
+                    if (!routine.start_time) return false;
+                    var routineHour = parseInt(routine.start_time.split(':')[0]);
+                    var routineEndHour = parseInt(routine.end_time.split(':')[0]);
+                    return routineHour <= hour && routineEndHour > hour;
+                });
+                
+                for (var i = 0; i < routinesInHour.length; i++) {
+                    var routine = routinesInHour[i];
+                    var routineElement = document.createElement('div');
+                    routineElement.className = 'routine-task ' + (routine.repetition_type || 'daily');
+                    routineElement.innerHTML = 
+                        '<div class="routine-user">' + (routine.user_name || 'Unknown') + '</div>' +
+                        '<div><strong>' + (routine.title || 'Untitled') + '</strong></div>' +
+                        '<small>' + (routine.start_time || '') + ' - ' + (routine.end_time || '') + '</small>';
+                    routineSlot.appendChild(routineElement);
+                }
+                
+                timeline.appendChild(routineSlot);
+            }
+        }
+
+        function changeDate(days) {
+            var date = new Date(currentDate);
+            date.setDate(date.getDate() + days);
+            var newDate = date.toISOString().split('T')[0];
+            window.location.href = '?date=' + newDate;
+        }
+
+        function goToDate() {
+            var selectedDate = document.getElementById('date-input').value;
+            if (selectedDate) {
+                window.location.href = '?date=' + selectedDate;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRoutineData();
+            generateTimeline();
+        });
+    </script>
+</body>
+</html>

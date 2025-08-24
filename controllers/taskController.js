@@ -259,6 +259,257 @@ const taskController = {
     }
   },
 
+  // NEW ROUTINE METHODS
+  getMyRoutine: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Get user's routine tasks
+      const { data: routineTasks, error } = await supabase
+        .from('routine_tasks')
+        .select(`
+          *,
+          user_profile:profiles!user_id(full_name, email)
+        `)
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+
+      res.render('my-routine', {
+        routineTasks: routineTasks || [],
+        moment,
+        error: null
+      });
+
+    } catch (error) {
+      console.error('Get my routine error:', error);
+      res.render('my-routine', {
+        routineTasks: [],
+        moment,
+        error: 'Failed to load routine tasks'
+      });
+    }
+  },
+
+  getCreateRoutine: async (req, res) => {
+    try {
+      res.render('create-routine', {
+        error: null
+      });
+    } catch (error) {
+      console.error('Get create routine error:', error);
+      res.render('create-routine', {
+        error: 'Failed to load form'
+      });
+    }
+  },
+
+  postCreateRoutine: async (req, res) => {
+    try {
+      const {
+        title,
+        description,
+        start_time,
+        end_time,
+        repetition_type,
+        weekly_days,
+        specific_date
+      } = req.body;
+
+      if (!title || !start_time || !end_time || !repetition_type) {
+        throw new Error('Title, start time, end time, and repetition type are required');
+      }
+
+      // Validate time range
+      if (start_time >= end_time) {
+        throw new Error('End time must be after start time');
+      }
+
+      // Process weekly days if repetition is weekly
+      let processedWeeklyDays = null;
+      if (repetition_type === 'weekly' && weekly_days) {
+        processedWeeklyDays = Array.isArray(weekly_days) ? weekly_days.map(day => parseInt(day)) : [parseInt(weekly_days)];
+      }
+
+      // Check for conflicts with existing routine tasks
+      const { data: conflicts } = await supabase
+        .from('routine_tasks')
+        .select('*')
+        .eq('user_id', req.user.id)
+        .eq('is_active', true)
+        .or(`and(start_time.lte.${start_time},end_time.gt.${start_time}),and(start_time.lt.${end_time},end_time.gte.${end_time}),and(start_time.gte.${start_time},end_time.lte.${end_time})`);
+
+      if (conflicts && conflicts.length > 0) {
+        throw new Error('You have a conflicting routine task at this time');
+      }
+
+      const routineData = {
+        user_id: req.user.id,
+        title: title.trim(),
+        description: description ? description.trim() : null,
+        start_time,
+        end_time,
+        repetition_type,
+        weekly_days: processedWeeklyDays,
+        specific_date: repetition_type === 'single' ? specific_date : null,
+        timezone: 'Europe/Bucharest',
+        created_at: new Date().toISOString()
+      };
+
+      const { data: newRoutine, error } = await supabase
+        .from('routine_tasks')
+        .insert(routineData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      res.redirect('/tasks/my-routine');
+
+    } catch (error) {
+      console.error('Create routine error:', error);
+      res.render('create-routine', {
+        error: error.message || 'Failed to create routine task'
+      });
+    }
+  },
+
+  getRoutineDetails: async (req, res) => {
+    try {
+      const routineId = req.params.id;
+
+      const { data: routine, error } = await supabase
+        .from('routine_tasks')
+        .select(`
+          *,
+          user_profile:profiles!user_id(full_name, email)
+        `)
+        .eq('id', routineId)
+        .eq('user_id', req.user.id) // Only allow viewing own routines
+        .single();
+
+      if (error) throw error;
+
+      res.render('routine-details', {
+        routine,
+        moment,
+        weekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      });
+
+    } catch (error) {
+      console.error('Get routine details error:', error);
+      res.redirect('/tasks/my-routine');
+    }
+  },
+
+  postUpdateRoutine: async (req, res) => {
+    try {
+      const routineId = req.params.id;
+      const updates = {};
+
+      ['title', 'description', 'start_time', 'end_time', 'repetition_type', 'weekly_days', 'specific_date'].forEach(field => {
+        if (req.body[field] !== undefined) {
+          if (field === 'weekly_days' && req.body[field]) {
+            updates[field] = Array.isArray(req.body[field]) 
+              ? req.body[field].map(day => parseInt(day))
+              : [parseInt(req.body[field])];
+          } else {
+            updates[field] = req.body[field] || null;
+          }
+        }
+      });
+
+      updates.updated_at = new Date().toISOString();
+
+      const { error } = await supabase
+        .from('routine_tasks')
+        .update(updates)
+        .eq('id', routineId)
+        .eq('user_id', req.user.id);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: 'Routine task updated successfully' });
+
+    } catch (error) {
+      console.error('Update routine error:', error);
+      res.status(500).json({ error: 'Failed to update routine task' });
+    }
+  },
+
+  deleteRoutine: async (req, res) => {
+    try {
+      const routineId = req.params.id;
+
+      const { error } = await supabase
+        .from('routine_tasks')
+        .update({ is_active: false })
+        .eq('id', routineId)
+        .eq('user_id', req.user.id);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: 'Routine task deleted successfully' });
+
+    } catch (error) {
+      console.error('Delete routine error:', error);
+      res.status(500).json({ error: 'Failed to delete routine task' });
+    }
+  },
+
+  getTeamRoutines: async (req, res) => {
+    try {
+      const { date } = req.query;
+      const selectedDate = date || moment().tz('Europe/Bucharest').format('YYYY-MM-DD');
+      const dayOfWeek = moment(selectedDate).day(); // 0 = Sunday, 1 = Monday, etc.
+      
+      // Get all active routine tasks that apply to the selected date
+      const { data: allRoutines } = await supabase
+        .from('routine_tasks')
+        .select(`
+          *,
+          user_profile:profiles!user_id(full_name, email)
+        `)
+        .eq('is_active', true)
+        .order([
+          { column: 'start_time', ascending: true },
+          { column: 'user_id', ascending: true }
+        ]);
+
+      // Filter routines based on repetition type and selected date
+      const applicableRoutines = (allRoutines || []).filter(routine => {
+        if (routine.repetition_type === 'daily') {
+          return true;
+        } else if (routine.repetition_type === 'weekly') {
+          return routine.weekly_days && routine.weekly_days.includes(dayOfWeek);
+        } else if (routine.repetition_type === 'single') {
+          return routine.specific_date === selectedDate;
+        }
+        return false;
+      });
+
+      res.render('team-routines', {
+        routines: applicableRoutines,
+        selectedDate,
+        moment,
+        dayOfWeek,
+        error: null
+      });
+
+    } catch (error) {
+      console.error('Get team routines error:', error);
+      res.render('team-routines', {
+        routines: [],
+        selectedDate: moment().tz('Europe/Bucharest').format('YYYY-MM-DD'),
+        moment,
+        dayOfWeek: moment().day(),
+        error: 'Failed to load team routines'
+      });
+    }
+  },
+
   // SCHEDULE ROUTES
   getSchedule: async (req, res) => {
     try {

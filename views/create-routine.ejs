@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task - Dante Platform</title>
+    <title>Create Routine Task - Dante Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Same neumorphism styles */
         :root {
             --primary-bg: #e8e8e8;
             --secondary-bg: #f0f0f0;
@@ -246,6 +245,30 @@
             gap: 16px;
         }
 
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+            margin: 0;
+            cursor: pointer;
+        }
+
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
@@ -257,6 +280,30 @@
             background: #fef2f2;
             color: #dc2626;
             border: 1px solid #fecaca;
+        }
+
+        .conditional-field {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .checkbox-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -275,25 +322,17 @@
                         <a href="/dashboard" class="nav-link">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/tasks" class="nav-link active">Tasks</a>
+                        <a href="/tasks" class="nav-link">Tasks</a>
                     </li>
                     <li class="nav-item">
-    <a href="/tasks/my-routine" class="nav-link">My Routine</a>
-</li>
-<li class="nav-item">
-    <a href="/tasks/team-routines" class="nav-link">Team Routines</a>
-</li>
-                    <li class="nav-item">
-                        <a href="/schedule" class="nav-link">Schedule</a>
+                        <a href="/tasks/my-routine" class="nav-link active">My Routine</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/schedule/team" class="nav-link">Team View</a>
+                        <a href="/tasks/team-routines" class="nav-link">Team Routines</a>
                     </li>
-                    <% if (typeof profile !== 'undefined' && profile.role === 'admin') { %>
                     <li class="nav-item">
-                        <a href="/admin" class="nav-link">Admin Panel</a>
+                        <a href="/tasks/schedule" class="nav-link">Schedule</a>
                     </li>
-                    <% } %>
                 </ul>
             </nav>
 
@@ -309,8 +348,8 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
-                <h1 class="page-title">Create New Task</h1>
-                <a href="/tasks" class="btn btn-secondary">← Back to Tasks</a>
+                <h1 class="page-title">Create Routine Task</h1>
+                <a href="/tasks/my-routine" class="btn btn-secondary">← Back to My Routine</a>
             </div>
 
             <% if (typeof error !== 'undefined' && error) { %>
@@ -318,55 +357,145 @@
             <% } %>
 
             <div class="card">
-                <h3 class="card-title">Task Details</h3>
+                <h3 class="card-title">Routine Task Details</h3>
                 
-                <form action="/tasks/create" method="POST">
+                <form action="/tasks/my-routine/create" method="POST">
                     <div class="form-group">
                         <label for="title" class="form-label">Task Title *</label>
                         <input type="text" id="title" name="title" class="form-control" required 
-                               placeholder="Enter task title...">
+                               placeholder="e.g., Morning standup meeting, Email review, Client calls...">
                     </div>
 
                     <div class="form-group">
                         <label for="description" class="form-label">Description</label>
                         <textarea id="description" name="description" class="form-control" 
-                                  placeholder="Enter task description..."></textarea>
+                                  placeholder="Enter routine task description..."></textarea>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="assigned_to" class="form-label">Assign To</label>
-                            <select id="assigned_to" name="assigned_to" class="form-control">
-                                <option value="">Select team member...</option>
-                                <% teamMembers.forEach(member => { %>
-                                <option value="<%= member.id %>"><%= member.full_name %></option>
-                                <% }); %>
-                            </select>
+                            <label for="start_time" class="form-label">Start Time *</label>
+                            <input type="time" id="start_time" name="start_time" class="form-control" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="priority" class="form-label">Priority</label>
-                            <select id="priority" name="priority" class="form-control">
-                                <option value="low">Low</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="high">High</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
+                            <label for="end_time" class="form-label">End Time *</label>
+                            <input type="time" id="end_time" name="end_time" class="form-control" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="due_date" class="form-label">Due Date</label>
-                        <input type="date" id="due_date" name="due_date" class="form-control">
+                        <label for="repetition_type" class="form-label">Repetition Type *</label>
+                        <select id="repetition_type" name="repetition_type" class="form-control" required onchange="toggleRepetitionOptions()">
+                            <option value="">Select repetition type...</option>
+                            <option value="daily">Daily (Every day)</option>
+                            <option value="weekly">Weekly (Specific days)</option>
+                            <option value="single">Single Day</option>
+                        </select>
+                    </div>
+
+                    <!-- Weekly Days Selection -->
+                    <div id="weekly-options" class="conditional-field">
+                        <label class="form-label">Select Days of the Week:</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-1" name="weekly_days" value="1">
+                                <label for="day-1">Monday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-2" name="weekly_days" value="2">
+                                <label for="day-2">Tuesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-3" name="weekly_days" value="3">
+                                <label for="day-3">Wednesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-4" name="weekly_days" value="4">
+                                <label for="day-4">Thursday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-5" name="weekly_days" value="5">
+                                <label for="day-5">Friday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-6" name="weekly_days" value="6">
+                                <label for="day-6">Saturday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="day-0" name="weekly_days" value="0">
+                                <label for="day-0">Sunday</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Single Day Selection -->
+                    <div id="single-options" class="conditional-field">
+                        <label for="specific_date" class="form-label">Select Date:</label>
+                        <input type="date" id="specific_date" name="specific_date" class="form-control">
                     </div>
 
                     <div style="display: flex; gap: 12px; margin-top: 30px;">
-                        <button type="submit" class="btn btn-primary">Create Task</button>
-                        <a href="/tasks" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Routine Task</button>
+                        <a href="/tasks/my-routine" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
         </main>
     </div>
+
+    <script>
+        function toggleRepetitionOptions() {
+            const repetitionType = document.getElementById('repetition_type').value;
+            const weeklyOptions = document.getElementById('weekly-options');
+            const singleOptions = document.getElementById('single-options');
+            
+            // Hide all conditional fields
+            weeklyOptions.style.display = 'none';
+            singleOptions.style.display = 'none';
+            
+            // Show relevant field
+            if (repetitionType === 'weekly') {
+                weeklyOptions.style.display = 'block';
+            } else if (repetitionType === 'single') {
+                singleOptions.style.display = 'block';
+                // Set minimum date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('specific_date').min = today;
+            }
+        }
+
+        // Validate form before submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const repetitionType = document.getElementById('repetition_type').value;
+            
+            if (repetitionType === 'weekly') {
+                const checkedDays = document.querySelectorAll('input[name="weekly_days"]:checked');
+                if (checkedDays.length === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one day of the week.');
+                    return;
+                }
+            }
+            
+            if (repetitionType === 'single') {
+                const specificDate = document.getElementById('specific_date').value;
+                if (!specificDate) {
+                    e.preventDefault();
+                    alert('Please select a specific date.');
+                    return;
+                }
+            }
+            
+            // Validate time range
+            const startTime = document.getElementById('start_time').value;
+            const endTime = document.getElementById('end_time').value;
+            if (startTime && endTime && startTime >= endTime) {
+                e.preventDefault();
+                alert('End time must be after start time.');
+                return;
+            }
+        });
+    </script>
 </body>
 </html>

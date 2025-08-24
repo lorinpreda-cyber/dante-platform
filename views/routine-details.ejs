@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routine Details - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background: var(--button-bg);
+            color: var(--text-primary);
+            border-color: var(--button-border);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: var(--text-light);
+            border-color: #ef4444;
+        }
+
+        .detail-section {
+            margin-bottom: 16px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .repetition-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .repetition-daily {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .repetition-weekly {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .repetition-single {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .detail-row, .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/my-routine" class="nav-link active">My Routine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/team-routines" class="nav-link">Team Routines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/schedule" class="nav-link">Schedule</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' && profile ? profile.role : 'member' %></div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title"><%= routine.title %></h1>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button onclick="toggleEditMode()" class="btn btn-primary" id="edit-btn">Edit Routine</button>
+                    <a href="/tasks/my-routine" class="btn btn-secondary">← Back to My Routine</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Routine Task Details</div>
+                
+                <!-- View Mode -->
+                <div id="view-mode">
+                    <div class="detail-section">
+                        <label class="detail-label">Title</label>
+                        <div class="detail-value" id="view-title"><%= routine.title %></div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <label class="detail-label">Description</label>
+                        <div class="detail-value" id="view-description"><%= routine.description || 'No description provided' %></div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-section">
+                            <label class="detail-label">Start Time</label>
+                            <div class="detail-value" id="view-start-time"><%= routine.start_time %> (Romanian Time)</div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <label class="detail-label">End Time</label>
+                            <div class="detail-value" id="view-end-time"><%= routine.end_time %> (Romanian Time)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <label class="detail-label">Repetition</label>
+                        <div class="detail-value">
+                            <span class="repetition-badge repetition-<%= routine.repetition_type %>" id="view-repetition-badge">
+                                <% if (routine.repetition_type === 'daily') { %>
+                                    Daily
+                                <% } else if (routine.repetition_type === 'weekly') { %>
+                                    Weekly: 
+                                    <% 
+                                    const selectedDays = routine.weekly_days ? routine.weekly_days.map(day => weekDayNames[day]).join(', ') : 'None';
+                                    %>
+                                    <%= selectedDays %>
+                                <% } else { %>
+                                    Single Day: <%= moment(routine.specific_date).format('MMM DD, YYYY') %>
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <label class="detail-label">Created</label>
+                        <div class="detail-value"><%= moment(routine.created_at).format('MMMM DD, YYYY HH:mm') %></div>
+                    </div>
+                    
+                    <% if (routine.updated_at && routine.updated_at !== routine.created_at) { %>
+                    <div class="detail-section">
+                        <label class="detail-label">Last Updated</label>
+                        <div class="detail-value"><%= moment(routine.updated_at).format('MMMM DD, YYYY HH:mm') %></div>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="edit-mode" style="display: none;">
+                    <form id="edit-form">
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input type="text" id="edit-title" class="form-control" value="<%= routine.title %>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="edit-description" class="form-control" rows="4"><%= routine.description || '' %></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" id="edit-start-time" class="form-control" value="<%= routine.start_time %>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">End Time</label>
+                                <input type="time" id="edit-end-time" class="form-control" value="<%= routine.end_time %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Repetition Type</label>
+                            <select id="edit-repetition-type" class="form-control">
+                                <option value="daily" <%= routine.repetition_type === 'daily' ? 'selected' : '' %>>Daily (Every day)</option>
+                                <option value="weekly" <%= routine.repetition_type === 'weekly' ? 'selected' : '' %>>Weekly (Specific days)</option>
+                                <option value="single" <%= routine.repetition_type === 'single' ? 'selected' : '' %>>Single Day</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 20px;">
+                            <button type="button" onclick="saveRoutine()" class="btn btn-primary">Save Changes</button>
+                            <button type="button" onclick="cancelEdit()" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isEditMode = false;
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editBtn = document.getElementById('edit-btn');
+            
+            if (isEditMode) {
+                // Switch to view mode
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                editBtn.textContent = 'Edit Routine';
+                isEditMode = false;
+            } else {
+                // Switch to edit mode
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                editBtn.textContent = 'Cancel Edit';
+                isEditMode = true;
+            }
+        }
+
+        function cancelEdit() {
+            toggleEditMode();
+        }
+
+        async function saveRoutine() {
+            const title = document.getElementById('edit-title').value.trim();
+            const description = document.getElementById('edit-description').value.trim();
+            const startTime = document.getElementById('edit-start-time').value;
+            const endTime = document.getElementById('edit-end-time').value;
+            const repetitionType = document.getElementById('edit-repetition-type').value;
+
+            if (!title) {
+                alert('Title is required!');
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert('End time must be after start time!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/tasks/my-routine/<%= routine.id %>/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        start_time: startTime,
+                        end_time: endTime,
+                        repetition_type: repetitionType
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Routine task updated successfully!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert('❌ Failed to update routine task');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Failed to update routine task');
+            }
+        }
+    </script>
+</body>
+</html>
