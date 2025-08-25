@@ -10,7 +10,8 @@ router.use(authMiddleware);
 router.get('/', taskController.getTasks);
 router.get('/create', taskController.getCreateTask);
 router.post('/create', taskController.postCreateTask);
-router.get('/check-availability', requireAuth, taskController.checkUserAvailability);
+// FIX: Remove requireAuth since authMiddleware already handles authentication
+router.get('/check-availability', taskController.checkUserAvailability);
 
 // ROUTINE ROUTES (MUST come before /:id routes)
 router.get('/my-routine', taskController.getMyRoutine);

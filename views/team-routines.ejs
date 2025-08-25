@@ -353,25 +353,33 @@
                 <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
             </div>
             
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="/dashboard" class="nav-link">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/tasks" class="nav-link">Tasks</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/tasks/my-routine" class="nav-link">My Routine</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/tasks/team-routines" class="nav-link active">Team Routines</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/tasks/schedule" class="nav-link">Schedule</a>
-                    </li>
-                </ul>
-            </nav>
+<nav>
+    <ul class="nav-menu">
+        <li class="nav-item">
+            <a href="/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a href="/tasks" class="nav-link <%= title && title.includes('Task') ? 'active' : '' %>">Tasks</a>
+        </li>
+        <li class="nav-item">
+            <a href="/tasks/my-routine" class="nav-link <%= title && title.includes('Routine') ? 'active' : '' %>">My Routine</a>
+        </li>
+        <li class="nav-item">
+            <a href="/tasks/team-routines" class="nav-link <%= title === 'Team Routines' ? 'active' : '' %>">Team Routines</a>
+        </li>
+        <li class="nav-item">
+            <a href="/schedule" class="nav-link <%= title && title.includes('Schedule') ? 'active' : '' %>">Schedule</a>
+        </li>
+        <li class="nav-item">
+            <a href="/schedule/my-events" class="nav-link <%= title === 'My Events' ? 'active' : '' %>">My Events</a>
+        </li>
+        <% if (typeof profile !== 'undefined' && profile && profile.role === 'admin') { %>
+        <li class="nav-item">
+            <a href="/admin" class="nav-link <%= title && title.includes('Admin') ? 'active' : '' %>">Admin Panel</a>
+        </li>
+        <% } %>
+    </ul>
+</nav>
 
             <div class="user-info">
                 <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
