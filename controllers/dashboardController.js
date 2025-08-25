@@ -50,16 +50,16 @@ const dashboardController = {
         .limit(10);
 
       // Get today's schedule
-      const { data: todaySchedule } = await supabase
-        .from('schedule')
-        .select(`
-          *,
-          assigned_to_profile:profiles!assigned_to(full_name),
-          created_by_profile:profiles!created_by(full_name)
-        `)
-        .or(`assigned_to.eq.${userId},created_by.eq.${userId}`)
-        .eq('date', today)
-        .order('start_time', { ascending: true });
+const { data: todaySchedule } = await supabase
+  .from('user_schedules')
+  .select(`
+    *,
+    shift_template:shift_templates(name),
+    user_profile:profiles!user_id(full_name)
+  `)
+  .eq('user_id', userId)
+  .eq('date', today)
+  .order('start_time', { ascending: true });
 
       // Get active team members
       const { data: teamMembers } = await supabase
