@@ -21,15 +21,13 @@ const authController = {
         return res.render('login', { error: error.message, success: null });
       }
 
-      // Set session cookie
       res.cookie('access_token', data.session.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax'
       });
 
-      // Update last login
       await supabase
         .from('profiles')
         .update({ last_login: new Date().toISOString() })

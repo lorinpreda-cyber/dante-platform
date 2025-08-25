@@ -7,7 +7,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const taskRoutes = require('./routes/tasks');
-const scheduleRoutes = require('./routes/schedule');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -17,27 +17,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// View engine setup - Simplified without layouts temporarily
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Make moment available in all templates
 app.locals.moment = moment;
 
-// Test route to verify server works
-app.get('/test', (req, res) => {
-  res.json({ 
-    status: 'Server is working!', 
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV || 'development'
-  });
-});
-
 // Routes
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/tasks', taskRoutes);
-app.use('/schedule', scheduleRoutes);
+
 // Root route
 app.get('/', (req, res) => {
   res.redirect('/auth/login');
@@ -51,25 +42,17 @@ app.use((req, res) => {
   });
 });
 
-// Error handler - Enhanced for debugging
+// Error handler
 app.use((err, req, res, next) => {
-  console.error('=== SERVER ERROR ===');
-  console.error('Error:', err);
-  console.error('Stack:', err.stack);
-  console.error('Request path:', req.path);
-  console.error('Request method:', req.method);
-  console.error('===================');
-  
+  console.error('Server error:', err);
   res.status(500).json({ 
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong',
-    path: req.path
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Dante Platform server running on port ${PORT}`);
-  console.log(`📍 Visit: http://localhost:${PORT}`);
-  console.log(`🧪 Test endpoint: http://localhost:${PORT}/test`);
-  console.log(`🔐 Login: http://localhost:${PORT}/auth/login`);
+  console.log(`Dante Platform server running on port ${PORT}`);
+  console.log(`Visit: http://localhost:${PORT}`);
+  console.log(`Login: http://localhost:${PORT}/auth/login`);
 });
