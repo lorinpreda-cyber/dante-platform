@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%- title %> - Dante Platform</title>
+    <link rel="stylesheet" href="/css/neumorphism.css">
+    <style>
+        .schedule-container {
+            padding: 2rem;
+            background: var(--background-color, #f0f2f5);
+            min-height: 100vh;
+        }
+
+        .schedule-header {
+            background: var(--surface-color, #ffffff);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .week-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .week-info {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .schedule-matrix {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .schedule-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .user-row {
+            background: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-row:hover {
+            background: #f9fafb;
+        }
+
+        .user-cell {
+            text-align: left;
+            font-weight: 500;
+            color: #374151;
+            background: #f9fafb;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        .user-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 0 2px #ffffff;
+        }
+
+        .schedule-cell {
+            min-width: 120px;
+            height: 80px;
+            position: relative;
+            cursor: pointer;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-cell:hover {
+            background: #f3f4f6;
+        }
+
+        .schedule-cell.has-shift {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .schedule-cell.has-event {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .schedule-cell.has-both {
+            background: linear-gradient(45deg, #3b82f6 50%, #f59e0b 50%);
+            color: white;
+        }
+
+        .shift-info {
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .shift-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .shift-times {
+            opacity: 0.9;
+        }
+
+        .event-info {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .shift-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 20;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .shift-dropdown.show {
+            display: block;
+        }
+
+        .shift-option {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s ease;
+        }
+
+        .shift-option:hover {
+            background: #f3f4f6;
+        }
+
+        .shift-option:last-child {
+            border-bottom: none;
+        }
+
+        .shift-option.remove {
+            color: #ef4444;
+            font-weight: 500;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-spinner {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-container {
+                padding: 1rem;
+            }
+
+            .schedule-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .schedule-actions {
+                justify-content: center;
+            }
+
+            .schedule-table th,
+            .schedule-table td {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .user-cell {
+                min-width: 100px;
+            }
+
+            .schedule-cell {
+                min-width: 80px;
+                height: 60px;
+            }
+
+            .shift-info {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="schedule-container" 
+         data-week-offset="<%= weekOffset %>" 
+         data-current-week="<%= currentWeek %>" 
+         data-is-admin="<%= user.role === 'admin' %>">
+        
+        <!-- Header -->
+        <div class="schedule-header">
+            <div class="week-navigation">
+                <button class="nav-btn" data-week="<%= weekOffset - 1 %>" onclick="changeWeek(this.dataset.week)">
+                    ← Previous
+                </button>
+                <div class="week-info">
+                    <% if (currentWeek) { %>
+                        Current Week
+                    <% } else if (weekOffset > 0) { %>
+                        <%= weekOffset %> weeks ahead
+                    <% } else { %>
+                        <%= Math.abs(weekOffset) %> weeks ago
+                    <% } %>
+                    <br>
+                    <small><%- weekDays[0].format('DD MMM') %> - <%- weekDays[6].format('DD MMM YYYY') %></small>
+                </div>
+                <button class="nav-btn" data-week="<%= weekOffset + 1 %>" onclick="changeWeek(this.dataset.week)">
+                    Next →
+                </button>
+                <% if (weekOffset !== 0) { %>
+                    <button class="nav-btn" data-week="0" onclick="changeWeek(this.dataset.week)">
+                        Today
+                    </button>
+                <% } %>
+            </div>
+            
+            <div class="schedule-actions">
+                <button class="action-btn" onclick="refreshSchedule()">
+                    Refresh
+                </button>
+                <a href="/schedule/my-events" class="action-btn">
+                    My Events
+                </a>
+                <a href="/dashboard" class="action-btn" style="background: #6b7280;">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Schedule Matrix -->
+        <div class="schedule-matrix">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th style="min-width: 150px;">User</th>
+                        <% weekDays.forEach(day => { %>
+                            <th>
+                                <%- day.format('ddd') %><br>
+                                <small><%- day.format('DD/MM') %></small>
+                            </th>
+                        <% }) %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% Object.values(scheduleMatrix).forEach(userRow => { %>
+                        <tr class="user-row">
+                            <td class="user-cell">
+                                <div class="user-name">
+                                    <%- userRow.user.full_name %>
+                                    <% if (userRow.user.role === 'admin') { %>
+                                        <small>(Admin)</small>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <% weekDays.forEach(day => { 
+                                const dayKey = day.format('YYYY-MM-DD');
+                                const dayData = userRow.days[dayKey];
+                                const hasShift = dayData.schedule;
+                                const hasEvents = dayData.events && dayData.events.length > 0;
+                                const cellClass = hasShift && hasEvents ? 'has-both' : (hasShift ? 'has-shift' : (hasEvents ? 'has-event' : ''));
+                            %>
+                                <td class="schedule-cell <%- cellClass %>" 
+                                    data-user-id="<%- userRow.user.id %>"
+                                    data-date="<%- dayKey %>"
+                                    data-has-shift="<%- hasShift ? 'true' : 'false' %>"
+                                    onclick="handleCellClick(this)">
+                                    
+                                    <% if (hasShift) { %>
+                                        <div class="shift-info">
+                                            <div class="shift-name"><%- dayData.schedule.shift_template.name %></div>
+                                            <div class="shift-times">
+                                                <%- dayData.schedule.start_time %> - <%- dayData.schedule.end_time %>
+                                                <% if (dayData.schedule.is_split) { %>
+                                                    <br><%- dayData.schedule.split_start_time %> - <%- dayData.schedule.split_end_time %>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <% if (hasEvents) { %>
+                                        <div class="event-info">
+                                            <% dayData.events.forEach(event => { %>
+                                                <div><%- event.title %></div>
+                                            <% }) %>
+                                        </div>
+                                    <% } %>
+
+                                    <% if (user.role === 'admin') { %>
+                                        <div class="shift-dropdown">
+                                            <% shiftTemplates.forEach(template => { %>
+                                                <div class="shift-option" 
+                                                     data-template-id="<%- template.id %>"
+                                                     data-user-id="<%- userRow.user.id %>"
+                                                     data-date="<%- dayKey %>"
+                                                     onclick="assignShift(this)">
+                                                    <%- template.name %>
+                                                    <br><small><%- template.start_time %> - <%- template.end_time %></small>
+                                                </div>
+                                            <% }) %>
+                                            <% if (hasShift) { %>
+                                                <div class="shift-option remove" 
+                                                     data-user-id="<%- userRow.user.id %>"
+                                                     data-date="<%- dayKey %>"
+                                                     onclick="removeShift(this)">
+                                                    Remove Shift
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    <% } %>
+                                </td>
+                            <% }) %>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div>Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Read data from container attributes
+        const container = document.querySelector('.schedule-container');
+        const scheduleData = {
+            weekOffset: parseInt(container.dataset.weekOffset),
+            currentWeek: container.dataset.currentWeek === 'true',
+            isAdmin: container.dataset.isAdmin === 'true'
+        };
+
+        // Week navigation using data attributes
+        function changeWeek(offset) {
+            window.location.href = `/schedule?week=${offset}`;
+        }
+
+        // Handle cell clicks
+        function handleCellClick(cell) {
+            if (scheduleData.isAdmin) {
+                const dropdown = cell.querySelector('.shift-dropdown');
+                if (!dropdown) return;
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.shift-dropdown.show').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('show');
+                });
+                
+                dropdown.classList.toggle('show');
+            } else {
+                const userId = cell.dataset.userId;
+                const date = cell.dataset.date;
+                alert(`User schedule for ${date}`);
+            }
+        }
+
+        // Assign shift using data attributes
+        async function assignShift(element) {
+            event.stopPropagation();
+            
+            const userId = element.dataset.userId;
+            const date = element.dataset.date;
+            const templateId = element.dataset.templateId;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('/schedule/assign', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        date,
+                        shiftTemplateId: templateId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error assigning shift:', error);
+                alert('Error assigning shift');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Remove shift using data attributes
+        async function removeShift(element) {
+            event.stopPropagation();
+            
+            if (!confirm('Are you sure you want to remove this shift?')) {
+                return;
+            }
+            
+            const userId = element.dataset.userId;
+            const date = element.dataset.date;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('/schedule/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        date
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error removing shift:', error);
+                alert('Error removing shift');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Refresh schedule
+        function refreshSchedule() {
+            location.reload();
+        }
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.schedule-cell')) {
+                document.querySelectorAll('.shift-dropdown.show').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

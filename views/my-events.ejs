@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%- title %> - Dante Platform</title>
+    <link rel="stylesheet" href="/css/neumorphism.css">
+    <style>
+        .events-container {
+            padding: 2rem;
+            background: var(--background-color, #f0f2f5);
+            min-height: 100vh;
+        }
+
+        .events-header {
+            background: var(--surface-color, #ffffff);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .events-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        }
+
+        .event-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .event-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .event-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .event-type.vacation {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .event-type.sick_leave {
+            background: #ef4444;
+            color: white;
+        }
+
+        .event-type.appointment {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .event-type.personal {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .event-type.training {
+            background: #10b981;
+            color: white;
+        }
+
+        .event-dates {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .event-times {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-description {
+            color: #333;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .event-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.denied {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .event-btn {
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .event-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .event-btn.danger {
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+
+        .event-btn.danger:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background: #f9fafb;
+            color: #333;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: #ffffff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .events-container {
+                padding: 1rem;
+            }
+
+            .events-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="events-container" id="eventsData" data-events='<%- JSON.stringify(events) %>'>
+        <!-- Header -->
+        <div class="events-header">
+            <h1 class="header-title">My Personal Events</h1>
+            <div class="header-actions">
+                <button class="action-btn" onclick="showCreateModal()">
+                    Add New Event
+                </button>
+                <a href="/schedule" class="action-btn secondary">
+                    Back to Schedule
+                </a>
+            </div>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="events-grid">
+            <% if (events.length === 0) { %>
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <h3>No events yet</h3>
+                    <p>You haven't created any personal events. Click "Add New Event" to get started.</p>
+                </div>
+            <% } else { %>
+                <% events.forEach(event => { %>
+                    <div class="event-card">
+                        <div class="event-header">
+                            <h3 class="event-title"><%- event.title %></h3>
+                            <span class="event-type <%- event.event_type %>">
+                                <%- event.event_type.replace('_', ' ') %>
+                            </span>
+                        </div>
+                        
+                        <div class="event-dates">
+                            <% if (event.start_date === event.end_date) { %>
+                                <%- moment(event.start_date).format('DD MMMM YYYY') %>
+                            <% } else { %>
+                                <%- moment(event.start_date).format('DD MMM') %> - <%- moment(event.end_date).format('DD MMM YYYY') %>
+                            <% } %>
+                        </div>
+                        
+                        <% if (!event.is_all_day && event.start_time) { %>
+                            <div class="event-times">
+                                <%- event.start_time %> - <%- event.end_time || 'End time not set' %>
+                            </div>
+                        <% } else { %>
+                            <div class="event-times">All Day</div>
+                        <% } %>
+                        
+                        <% if (event.description) { %>
+                            <div class="event-description">
+                                <%- event.description %>
+                            </div>
+                        <% } %>
+                        
+                        <div class="event-status">
+                            <span class="status-badge <%- event.status %>">
+                                <%- event.status.charAt(0).toUpperCase() + event.status.slice(1) %>
+                            </span>
+                            <% if (event.approved_by_profile && event.approved_at) { %>
+                                <small>
+                                    by <%- event.approved_by_profile.full_name %> 
+                                    on <%- moment(event.approved_at).format('DD/MM/YYYY') %>
+                                </small>
+                            <% } %>
+                        </div>
+                        
+                        <div class="event-actions">
+                            <button class="event-btn" 
+                                    data-event-id="<%- event.id %>"
+                                    onclick="editEvent(this.dataset.eventId)">
+                                Edit
+                            </button>
+                            <button class="event-btn danger" 
+                                    data-event-id="<%- event.id %>"
+                                    onclick="deleteEvent(this.dataset.eventId)">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Event</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="eventForm">
+                <input type="hidden" id="eventId">
+                
+                <div class="form-group">
+                    <label class="form-label" for="title">Event Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="eventType">Event Type *</label>
+                    <select id="eventType" name="eventType" class="form-control" required>
+                        <option value="">Select type...</option>
+                        <option value="vacation">Vacation</option>
+                        <option value="sick_leave">Sick Leave</option>
+                        <option value="appointment">Appointment</option>
+                        <option value="personal">Personal</option>
+                        <option value="training">Training</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="startDate">Start Date *</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="endDate">End Date *</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isAllDay" name="isAllDay" checked onchange="toggleTimeFields()">
+                        <label class="form-label" for="isAllDay">All Day Event</label>
+                    </div>
+                </div>
+                
+                <div id="timeFields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="startTime">Start Time</label>
+                            <input type="time" id="startTime" name="startTime" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="endTime">End Time</label>
+                            <input type="time" id="endTime" name="endTime" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="3" 
+                              placeholder="Optional details about the event..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="action-btn secondary" onclick="closeModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="action-btn" id="submitBtn">
+                        Create Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Read events data from container attribute
+        const eventsContainer = document.getElementById('eventsData');
+        let eventsData = [];
+        
+        try {
+            eventsData = JSON.parse(eventsContainer.dataset.events);
+        } catch (error) {
+            console.error('Error parsing events data:', error);
+            eventsData = [];
+        }
+
+        let editingEventId = null;
+
+        // Show create modal
+        function showCreateModal() {
+            editingEventId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Event';
+            document.getElementById('submitBtn').textContent = 'Create Event';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = '';
+            
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+            
+            toggleTimeFields();
+            showModal();
+        }
+
+        // Edit event using event ID from data attribute
+        function editEvent(eventId) {
+            const event = eventsData.find(e => e.id === eventId);
+            if (!event) return;
+            
+            editingEventId = eventId;
+            document.getElementById('modalTitle').textContent = 'Edit Event';
+            document.getElementById('submitBtn').textContent = 'Update Event';
+            
+            // Populate form
+            document.getElementById('eventId').value = event.id;
+            document.getElementById('title').value = event.title;
+            document.getElementById('eventType').value = event.event_type;
+            document.getElementById('startDate').value = event.start_date;
+            document.getElementById('endDate').value = event.end_date;
+            document.getElementById('isAllDay').checked = event.is_all_day;
+            document.getElementById('startTime').value = event.start_time || '';
+            document.getElementById('endTime').value = event.end_time || '';
+            document.getElementById('description').value = event.description || '';
+            
+            toggleTimeFields();
+            showModal();
+        }
+
+        // Delete event using event ID from data attribute
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/schedule/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                alert('Error deleting event');
+            }
+        }
+
+        // Show modal
+        function showModal() {
+            document.getElementById('eventModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('show');
+        }
+
+        // Toggle time fields
+        function toggleTimeFields() {
+            const isAllDay = document.getElementById('isAllDay').checked;
+            const timeFields = document.getElementById('timeFields');
+            timeFields.style.display = isAllDay ? 'none' : 'block';
+            
+            if (isAllDay) {
+                document.getElementById('startTime').value = '';
+                document.getElementById('endTime').value = '';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const eventData = {
+                title: formData.get('title'),
+                eventType: formData.get('eventType'),
+                startDate: formData.get('startDate'),
+                endDate: formData.get('endDate'),
+                isAllDay: formData.get('isAllDay') === 'on',
+                startTime: formData.get('startTime'),
+                endTime: formData.get('endTime'),
+                description: formData.get('description')
+            };
+            
+            // Validation
+            if (!eventData.title || !eventData.eventType || !eventData.startDate || !eventData.endDate) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (eventData.startDate > eventData.endDate) {
+                alert('End date cannot be before start date');
+                return;
+            }
+            
+            try {
+                const url = editingEventId ? `/schedule/events/${editingEventId}` : '/schedule/events';
+                const method = editingEventId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(eventData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error saving event:', error);
+                alert('Error saving event');
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ESC key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

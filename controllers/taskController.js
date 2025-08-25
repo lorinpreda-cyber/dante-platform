@@ -1,5 +1,6 @@
 const { supabase } = require('../lib/supabaseClient');
 const moment = require('moment');
+const momentTz = require('moment-timezone');
 
 const taskController = {
   getTasks: async (req, res) => {
@@ -666,6 +667,52 @@ getTeamRoutines: async (req, res) => {
     } catch (error) {
       console.error('Delete scheduled task error:', error);
       res.status(500).json({ error: 'Failed to delete scheduled task' });
+    }
+  },
+   checkUserAvailability: async (req, res) => {
+    try {
+      const { userId, date } = req.query;
+      
+      // Check if user has a schedule for that date
+      const { data: schedule, error: scheduleError } = await supabase
+        .from('user_schedules')
+        .select(`
+          *,
+          shift_template:shift_templates(name, start_time, end_time)
+        `)
+        .eq('user_id', userId)
+        .eq('date', date)
+        .single();
+      
+      // Check if user has any personal events on that date
+      const { data: events, error: eventsError } = await supabase
+        .from('personal_events')
+        .select('*')
+        .eq('user_id', userId)
+        .lte('start_date', date)
+        .gte('end_date', date);
+      
+      const availability = {
+        isScheduled: !!schedule,
+        schedule: schedule || null,
+        hasPersonalEvents: events && events.length > 0,
+        events: events || [],
+        warning: null
+      };
+      
+      // Generate warning message
+      if (!schedule && (!events || events.length === 0)) {
+        availability.warning = 'User has no scheduled shift for this date';
+      } else if (!schedule && events && events.length > 0) {
+        availability.warning = `User has personal events: ${events.map(e => e.title).join(', ')}`;
+      } else if (schedule && events && events.length > 0) {
+        availability.warning = `User is scheduled but also has events: ${events.map(e => e.title).join(', ')}`;
+      }
+      
+      res.json({ success: true, availability });
+    } catch (error) {
+      console.error('Error checking user availability:', error);
+      res.status(500).json({ success: false, message: 'Error checking availability' });
     }
   }
 };
