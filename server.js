@@ -7,6 +7,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const taskRoutes = require('./routes/tasks');
+const scheduleRoutes = require('./routes/schedule');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,7 +29,7 @@ app.locals.moment = moment;
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/tasks', taskRoutes);
-
+app.use('/schedule', scheduleRoutes);
 // Root route
 app.get('/', (req, res) => {
   res.redirect('/auth/login');

@@ -196,170 +196,40 @@
             border-color: var(--accent-color);
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
+        .btn-secondary {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
         }
 
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            background: var(--primary-bg);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-inset);
-            transition: var(--transition);
-            box-sizing: border-box;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        .form-row {
+        .schedule-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .date-picker {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .date-nav-btn {
-            background: var(--button-bg);
-            border: 1px solid var(--button-border);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: var(--shadow-raised);
-            transition: var(--transition);
-        }
-
-        .date-nav-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
-        }
-
-        .current-date {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--accent-color);
-        }
-
-        .time-grid {
-            display: grid;
-            grid-template-columns: 80px 1fr;
-            gap: 1px;
-            background: var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .time-slot {
-            background: var(--primary-bg);
-            padding: 8px;
-            border-right: 1px solid var(--border-color);
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .schedule-slot {
-            background: var(--primary-bg);
-            padding: 8px;
-            min-height: 40px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .schedule-slot:hover {
+        .event-item {
             background: var(--secondary-bg);
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
         }
 
-        .scheduled-task {
-            background: var(--accent-color);
-            color: var(--text-light);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin: 2px 0;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .scheduled-task.ongoing {
-            background: #10b981;
-        }
-
-        .scheduled-task.busy {
-            background: #ef4444;
-        }
-
-        .scheduled-task.break {
-            background: #f59e0b;
-        }
-
-        .scheduled-task.available {
-            background: #6b7280;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background: var(--primary-bg);
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-raised);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 18px;
+        .event-title {
             font-weight: 600;
-            margin: 0;
+            font-size: 16px;
+            margin-bottom: 8px;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
+        .event-meta {
+            font-size: 12px;
             color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .status-badge {
@@ -370,24 +240,33 @@
             text-transform: uppercase;
         }
 
-        .status-ongoing { background: #d1fae5; color: #065f46; }
-        .status-busy { background: #fee2e2; color: #dc2626; }
-        .status-break { background: #fef3c7; color: #d97706; }
-        .status-available { background: #f3f4f6; color: #6b7280; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-denied { background: #fee2e2; color: #dc2626; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
 
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-            }
-            .time-grid {
-                grid-template-columns: 60px 1fr;
-            }
-            .date-picker {
-                flex-wrap: wrap;
-            }
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .schedule-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -400,37 +279,37 @@
                 <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
             </div>
             
-<nav>
-    <ul class="nav-menu">
-        <li class="nav-item">
-            <a href="/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">Dashboard</a>
-        </li>
-        <li class="nav-item">
-            <a href="/tasks" class="nav-link <%= title && title.includes('Task') ? 'active' : '' %>">Tasks</a>
-        </li>
-        <li class="nav-item">
-            <a href="/tasks/my-routine" class="nav-link <%= title && title.includes('Routine') ? 'active' : '' %>">My Routine</a>
-        </li>
-        <li class="nav-item">
-            <a href="/tasks/team-routines" class="nav-link <%= title === 'Team Routines' ? 'active' : '' %>">Team Routines</a>
-        </li>
-        <li class="nav-item">
-            <a href="/schedule" class="nav-link <%= title && title.includes('Schedule') ? 'active' : '' %>">Schedule</a>
-        </li>
-        <li class="nav-item">
-            <a href="/schedule/my-events" class="nav-link <%= title === 'My Events' ? 'active' : '' %>">My Events</a>
-        </li>
-        <% if (typeof profile !== 'undefined' && profile && profile.role === 'admin') { %>
-        <li class="nav-item">
-            <a href="/admin" class="nav-link <%= title && title.includes('Admin') ? 'active' : '' %>">Admin Panel</a>
-        </li>
-        <% } %>
-    </ul>
-</nav>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link <%= title && title.includes('Task') ? 'active' : '' %>">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/my-routine" class="nav-link <%= title && title.includes('Routine') ? 'active' : '' %>">My Routine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/team-routines" class="nav-link <%= title === 'Team Routines' ? 'active' : '' %>">Team Routines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link <%= title && title.includes('Schedule') ? 'active' : '' %>">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/my-events" class="nav-link <%= title === 'My Events' ? 'active' : '' %>">My Events</a>
+                    </li>
+                    <% if (typeof profile !== 'undefined' && profile && profile.role === 'admin') { %>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link <%= title && title.includes('Admin') ? 'active' : '' %>">Admin Panel</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
 
             <div class="user-info">
-                <div class="user-name">User</div>
-                <div class="user-role">member</div>
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' && profile ? profile.role : 'member' %></div>
                 <form action="/auth/logout" method="POST" style="margin: 0;">
                     <button type="submit" class="logout-btn">Logout</button>
                 </form>
@@ -440,326 +319,89 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
-                <h1 class="page-title">My Schedule</h1>
-                <button onclick="openCreateModal()" class="btn btn-primary">+ Add Time Block</button>
+                <h1 class="page-title">Schedule Overview</h1>
+                <a href="/schedule/my-events" class="btn btn-primary">Manage My Events</a>
             </div>
 
             <% if (typeof error !== 'undefined' && error) { %>
-            <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
-                <%= error %>
+            <div class="alert alert-error"><%= error %></div>
+            <% } %>
+
+            <div class="schedule-grid">
+                <!-- Today's Events -->
+                <div class="card">
+                    <h3 class="card-title">Today's Events</h3>
+                    <% if (todaysEvents && todaysEvents.length > 0) { %>
+                        <% todaysEvents.forEach(event => { %>
+                        <div class="event-item">
+                            <div class="event-title"><%= event.title %></div>
+                            <div class="event-meta">
+                                <span class="status-badge status-<%= event.status %>"><%= event.status.toUpperCase() %></span>
+                                <% if (!event.is_all_day && event.start_time) { %>
+                                <span><%= event.start_time %> - <%= event.end_time || 'No end time' %></span>
+                                <% } else { %>
+                                <span>All Day</span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                    <div class="empty-state">
+                        <p>No events scheduled for today</p>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="card">
+                    <h3 class="card-title">Upcoming Events (Next 7 Days)</h3>
+                    <% if (upcomingEvents && upcomingEvents.length > 0) { %>
+                        <% upcomingEvents.forEach(event => { %>
+                        <div class="event-item">
+                            <div class="event-title"><%= event.title %></div>
+                            <div class="event-meta">
+                                <span class="status-badge status-<%= event.status %>"><%= event.status.toUpperCase() %></span>
+                                <span><%= moment(event.start_date).format('MMM DD') %></span>
+                                <% if (!event.is_all_day && event.start_time) { %>
+                                <span><%= event.start_time %></span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                    <div class="empty-state">
+                        <p>No upcoming events</p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Pending Approvals -->
+            <% if (pendingEvents && pendingEvents.length > 0) { %>
+            <div class="card">
+                <h3 class="card-title">Pending Approval</h3>
+                <% pendingEvents.forEach(event => { %>
+                <div class="event-item">
+                    <div class="event-title"><%= event.title %></div>
+                    <div class="event-meta">
+                        <span class="status-badge status-pending">PENDING</span>
+                        <span><%= moment(event.start_date).format('MMM DD, YYYY') %></span>
+                        <span>Submitted: <%= moment(event.created_at).format('MMM DD') %></span>
+                    </div>
+                </div>
+                <% }); %>
             </div>
             <% } %>
 
-            <!-- Date Navigation -->
+            <!-- Quick Actions -->
             <div class="card">
-                <div class="date-picker">
-                    <button class="date-nav-btn" onclick="changeDate(-1)">← Previous</button>
-                    <span class="current-date" id="current-date"><%= moment(selectedDate).format('dddd, MMMM DD, YYYY') %></span>
-                    <button class="date-nav-btn" onclick="changeDate(1)">Next →</button>
-                    <input type="date" id="date-input" class="form-control" value="<%= selectedDate %>" onchange="goToDate()" style="width: auto; margin-left: auto;">
-                </div>
-            </div>
-
-            <!-- Schedule Grid -->
-            <div class="card">
-                <h3 class="card-title">Time Schedule</h3>
-                <div class="time-grid" id="schedule-grid">
-                    <!-- Time slots will be generated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Team Availability -->
-            <div class="card">
-                <h3 class="card-title">Team Availability</h3>
-                <div id="team-schedule">
-                    <% if (teamMembers && teamMembers.length > 0) { %>
-                    <% teamMembers.forEach(member => { %>
-                    <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <strong><%= member.full_name %></strong>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    <% }); %>
-                    <% } else { %>
-                    <p style="color: var(--text-secondary);">No team members to display</p>
-                    <% } %>
+                <h3 class="card-title">Quick Actions</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="/schedule/my-events" class="btn btn-primary">View All My Events</a>
+                    <a href="/tasks/team-routines" class="btn btn-secondary">Team Routines</a>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Create/Edit Modal -->
-    <div id="taskModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modal-title">Add Time Block</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <form id="scheduled-task-form">
-                <div class="form-group">
-                    <label class="form-label">Title *</label>
-                    <input type="text" id="task-title" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea id="task-description" class="form-control" rows="3"></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Start Time *</label>
-                        <input type="time" id="start-time" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">End Time *</label>
-                        <input type="time" id="end-time" class="form-control" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select id="task-status" class="form-control">
-                        <option value="ongoing">Ongoing Work</option>
-                        <option value="busy">Busy/Meeting</option>
-                        <option value="break">Break</option>
-                        <option value="available">Available</option>
-                    </select>
-                </div>
-                
-                <div style="display: flex; gap: 12px; margin-top: 20px;">
-                    <button type="button" onclick="saveScheduledTask()" class="btn btn-primary">Save</button>
-                    <button type="button" onclick="closeModal()" class="btn">Cancel</button>
-                    <button type="button" onclick="deleteScheduledTask()" class="btn" style="margin-left: auto; background: #ef4444; color: white; display: none;" id="delete-btn">Delete</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Hidden data for JavaScript -->
-    <script type="application/json" id="schedule-data">
-        {
-            "currentDate": "<%= selectedDate %>",
-            "scheduledTasks": <% if (scheduledTasks && scheduledTasks.length > 0) { %><%- JSON.stringify(scheduledTasks.map(task => ({
-                id: task.id,
-                title: task.title,
-                description: task.description || '',
-                start_time: task.start_time,
-                end_time: task.end_time,
-                status: task.status,
-                date: task.date
-            }))) %><% } else { %>[]<% } %>
-        }
-    </script>
-
-    <script>
-        // Global variables
-        var currentDate = '';
-        var scheduledTasks = [];
-        var editingTaskId = null;
-
-        // Load data from JSON script tag
-        function loadScheduleData() {
-            try {
-                var dataElement = document.getElementById('schedule-data');
-                var data = JSON.parse(dataElement.textContent);
-                currentDate = data.currentDate;
-                scheduledTasks = data.scheduledTasks || [];
-            } catch (error) {
-                console.error('Error loading schedule data:', error);
-                currentDate = new Date().toISOString().split('T')[0];
-                scheduledTasks = [];
-            }
-        }
-
-        // Generate time grid
-        function generateTimeGrid() {
-            var grid = document.getElementById('schedule-grid');
-            grid.innerHTML = '';
-            
-            for (var hour = 6; hour < 22; hour++) {
-                // Time label
-                var timeSlot = document.createElement('div');
-                timeSlot.className = 'time-slot';
-                timeSlot.textContent = (hour < 10 ? '0' + hour : hour) + ':00';
-                grid.appendChild(timeSlot);
-                
-                // Schedule slot
-                var scheduleSlot = document.createElement('div');
-                scheduleSlot.className = 'schedule-slot';
-                scheduleSlot.setAttribute('data-hour', hour);
-                scheduleSlot.onclick = function() {
-                    openCreateModal(parseInt(this.getAttribute('data-hour')));
-                };
-                
-                // Add scheduled tasks for this hour
-                var tasksInHour = scheduledTasks.filter(function(task) {
-                    if (!task.start_time) return false;
-                    var taskHour = parseInt(task.start_time.split(':')[0]);
-                    return taskHour === hour;
-                });
-                
-                for (var i = 0; i < tasksInHour.length; i++) {
-                    var task = tasksInHour[i];
-                    var taskElement = document.createElement('div');
-                    taskElement.className = 'scheduled-task ' + (task.status || 'ongoing');
-                    taskElement.innerHTML = '<strong>' + (task.title || 'Untitled') + '</strong><br><small>' + (task.start_time || '') + ' - ' + (task.end_time || '') + '</small>';
-                    taskElement.setAttribute('data-task-id', task.id);
-                    taskElement.onclick = function(e) {
-                        e.stopPropagation();
-                        var taskId = this.getAttribute('data-task-id');
-                        var taskToEdit = scheduledTasks.find(function(t) { return t.id === taskId; });
-                        if (taskToEdit) {
-                            editScheduledTask(taskToEdit);
-                        }
-                    };
-                    scheduleSlot.appendChild(taskElement);
-                }
-                
-                grid.appendChild(scheduleSlot);
-            }
-        }
-
-        function openCreateModal(hour) {
-            document.getElementById('modal-title').textContent = 'Add Time Block';
-            document.getElementById('scheduled-task-form').reset();
-            
-            if (hour && hour >= 0) {
-                document.getElementById('start-time').value = (hour < 10 ? '0' + hour : hour) + ':00';
-                document.getElementById('end-time').value = ((hour + 1) < 10 ? '0' + (hour + 1) : (hour + 1)) + ':00';
-            }
-            
-            editingTaskId = null;
-            document.getElementById('delete-btn').style.display = 'none';
-            document.getElementById('taskModal').style.display = 'block';
-        }
-
-        function editScheduledTask(task) {
-            document.getElementById('modal-title').textContent = 'Edit Time Block';
-            document.getElementById('task-title').value = task.title || '';
-            document.getElementById('task-description').value = task.description || '';
-            document.getElementById('start-time').value = task.start_time || '';
-            document.getElementById('end-time').value = task.end_time || '';
-            document.getElementById('task-status').value = task.status || 'ongoing';
-            
-            editingTaskId = task.id;
-            document.getElementById('delete-btn').style.display = 'block';
-            document.getElementById('taskModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('taskModal').style.display = 'none';
-            editingTaskId = null;
-        }
-
-        function saveScheduledTask() {
-            var title = document.getElementById('task-title').value.trim();
-            var description = document.getElementById('task-description').value.trim();
-            var startTime = document.getElementById('start-time').value;
-            var endTime = document.getElementById('end-time').value;
-            var status = document.getElementById('task-status').value;
-
-            if (!title || !startTime || !endTime) {
-                alert('Please fill in all required fields');
-                return;
-            }
-
-            if (startTime >= endTime) {
-                alert('End time must be after start time');
-                return;
-            }
-
-            var url = editingTaskId ? 
-                '/tasks/schedule/' + editingTaskId + '/update' : 
-                '/tasks/schedule/create';
-            
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: title,
-                    description: description,
-                    date: currentDate,
-                    start_time: startTime,
-                    end_time: endTime,
-                    status: status
-                })
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(result) {
-                if (result.success) {
-                    alert('✅ Time block ' + (editingTaskId ? 'updated' : 'created') + ' successfully!');
-                    closeModal();
-                    window.location.reload();
-                } else {
-                    alert('❌ ' + (result.error || 'Failed to save time block'));
-                }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
-                alert('❌ Failed to save time block');
-            });
-        }
-
-        function deleteScheduledTask() {
-            if (!editingTaskId) return;
-            
-            if (!confirm('Are you sure you want to delete this time block?')) return;
-
-            fetch('/tasks/schedule/' + editingTaskId, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(result) {
-                if (result.success) {
-                    alert('✅ Time block deleted successfully!');
-                    closeModal();
-                    window.location.reload();
-                } else {
-                    alert('❌ ' + (result.error || 'Failed to delete time block'));
-                }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
-                alert('❌ Failed to delete time block');
-            });
-        }
-
-        function changeDate(days) {
-            var date = new Date(currentDate);
-            date.setDate(date.getDate() + days);
-            var newDate = date.toISOString().split('T')[0];
-            window.location.href = '?date=' + newDate;
-        }
-
-        function goToDate() {
-            var selectedDate = document.getElementById('date-input').value;
-            if (selectedDate) {
-                window.location.href = '?date=' + selectedDate;
-            }
-        }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadScheduleData();
-            generateTimeGrid();
-        });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            var modal = document.getElementById('taskModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-    </script>
 </body>
 </html>
