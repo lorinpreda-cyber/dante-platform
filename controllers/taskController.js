@@ -1,6 +1,5 @@
 const { supabase } = require('../lib/supabaseClient');
 const moment = require('moment');
-const momentTz = require('moment-timezone');
 
 const taskController = {
   getTasks: async (req, res) => {
@@ -57,7 +56,6 @@ const taskController = {
 
   getCreateTask: async (req, res) => {
     try {
-      // Get team members for assignment
       const { data: teamMembers } = await supabase
         .from('profiles')
         .select('id, full_name, team:teams(name)')
@@ -80,13 +78,7 @@ const taskController = {
 
   postCreateTask: async (req, res) => {
     try {
-      const {
-        title,
-        description,
-        assigned_to,
-        due_date,
-        priority
-      } = req.body;
+      const { title, description, assigned_to, due_date, priority } = req.body;
 
       const taskData = {
         title,
@@ -110,7 +102,6 @@ const taskController = {
     } catch (error) {
       console.error('Create task error:', error);
       
-      // Get team members again for form
       const { data: teamMembers } = await supabase
         .from('profiles')
         .select('id, full_name, team:teams(name)')
@@ -128,7 +119,6 @@ const taskController = {
     try {
       const taskId = req.params.id;
 
-      // Get task details
       const { data: task, error } = await supabase
         .from('tasks')
         .select(`
@@ -141,7 +131,6 @@ const taskController = {
 
       if (error) throw error;
 
-      // Get team members for assignment
       const { data: teamMembers } = await supabase
         .from('profiles')
         .select('id, full_name')
@@ -260,256 +249,250 @@ const taskController = {
     }
   },
 
-  // NEW ROUTINE METHODS - CORRECTED
-getMyRoutine: async (req, res) => {
-  try {
-    const userId = req.user.id;
-    
-    // Get user's routine tasks with simpler query
-    const { data: routineTasks, error } = await supabase
-      .from('routine_tasks')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .order('start_time', { ascending: true });
+  // ROUTINE METHODS
+  getMyRoutine: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      const { data: routineTasks, error } = await supabase
+        .from('routine_tasks')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .order('start_time', { ascending: true });
 
-    if (error) {
-      console.error('Routine tasks query error:', error);
+      if (error) {
+        console.error('Routine tasks query error:', error);
+      }
+
+      res.render('my-routine', {
+        routineTasks: routineTasks || [],
+        moment: require('moment'),
+        error: error?.message || null
+      });
+
+    } catch (error) {
+      console.error('Get my routine error:', error);
+      res.render('my-routine', {
+        routineTasks: [],
+        moment: require('moment'),
+        error: 'Failed to load routine tasks'
+      });
     }
+  },
 
-    res.render('my-routine', {
-      routineTasks: routineTasks || [],
-      moment: require('moment'),
-      error: error?.message || null
-    });
-
-  } catch (error) {
-    console.error('Get my routine error:', error);
-    res.render('my-routine', {
-      routineTasks: [],
-      moment: require('moment'),
-      error: 'Failed to load routine tasks'
-    });
-  }
-},
-
-getCreateRoutine: async (req, res) => {
-  try {
-    res.render('create-routine', {
-      error: null
-    });
-  } catch (error) {
-    console.error('Get create routine error:', error);
-    res.render('create-routine', {
-      error: 'Failed to load form'
-    });
-  }
-},
-
-postCreateRoutine: async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      start_time,
-      end_time,
-      repetition_type,
-      weekly_days,
-      specific_date
-    } = req.body;
-
-    if (!title || !start_time || !end_time || !repetition_type) {
-      throw new Error('Title, start time, end time, and repetition type are required');
+  getCreateRoutine: async (req, res) => {
+    try {
+      res.render('create-routine', {
+        error: null
+      });
+    } catch (error) {
+      console.error('Get create routine error:', error);
+      res.render('create-routine', {
+        error: 'Failed to load form'
+      });
     }
+  },
 
-    // Validate time range
-    if (start_time >= end_time) {
-      throw new Error('End time must be after start time');
+  postCreateRoutine: async (req, res) => {
+    try {
+      const {
+        title,
+        description,
+        start_time,
+        end_time,
+        repetition_type,
+        weekly_days,
+        specific_date
+      } = req.body;
+
+      if (!title || !start_time || !end_time || !repetition_type) {
+        throw new Error('Title, start time, end time, and repetition type are required');
+      }
+
+      if (start_time >= end_time) {
+        throw new Error('End time must be after start time');
+      }
+
+      let processedWeeklyDays = null;
+      if (repetition_type === 'weekly' && weekly_days) {
+        processedWeeklyDays = Array.isArray(weekly_days) 
+          ? weekly_days.map(day => parseInt(day)) 
+          : [parseInt(weekly_days)];
+      }
+
+      const routineData = {
+        user_id: req.user.id,
+        title: title.trim(),
+        description: description ? description.trim() : null,
+        start_time,
+        end_time,
+        repetition_type,
+        weekly_days: processedWeeklyDays,
+        specific_date: repetition_type === 'single' ? specific_date : null,
+        timezone: 'Europe/Bucharest',
+        is_active: true,
+        created_at: new Date().toISOString()
+      };
+
+      const { data: newRoutine, error } = await supabase
+        .from('routine_tasks')
+        .insert(routineData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Insert routine error:', error);
+        throw error;
+      }
+
+      res.redirect('/tasks/my-routine');
+
+    } catch (error) {
+      console.error('Create routine error:', error);
+      res.render('create-routine', {
+        error: error.message || 'Failed to create routine task'
+      });
     }
+  },
 
-    // Process weekly days if repetition is weekly
-    let processedWeeklyDays = null;
-    if (repetition_type === 'weekly' && weekly_days) {
-      processedWeeklyDays = Array.isArray(weekly_days) 
-        ? weekly_days.map(day => parseInt(day)) 
-        : [parseInt(weekly_days)];
-    }
+  getRoutineDetails: async (req, res) => {
+    try {
+      const routineId = req.params.id;
 
-    const routineData = {
-      user_id: req.user.id,
-      title: title.trim(),
-      description: description ? description.trim() : null,
-      start_time,
-      end_time,
-      repetition_type,
-      weekly_days: processedWeeklyDays,
-      specific_date: repetition_type === 'single' ? specific_date : null,
-      timezone: 'Europe/Bucharest',
-      is_active: true,
-      created_at: new Date().toISOString()
-    };
+      const { data: routine, error } = await supabase
+        .from('routine_tasks')
+        .select('*')
+        .eq('id', routineId)
+        .eq('user_id', req.user.id)
+        .single();
 
-    const { data: newRoutine, error } = await supabase
-      .from('routine_tasks')
-      .insert(routineData)
-      .select()
-      .single();
+      if (error) {
+        console.error('Get routine details error:', error);
+        throw error;
+      }
 
-    if (error) {
-      console.error('Insert routine error:', error);
-      throw error;
-    }
+      res.render('routine-details', {
+        routine,
+        moment: require('moment'),
+        weekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      });
 
-    res.redirect('/tasks/my-routine');
-
-  } catch (error) {
-    console.error('Create routine error:', error);
-    res.render('create-routine', {
-      error: error.message || 'Failed to create routine task'
-    });
-  }
-},
-
-getRoutineDetails: async (req, res) => {
-  try {
-    const routineId = req.params.id;
-
-    const { data: routine, error } = await supabase
-      .from('routine_tasks')
-      .select('*')
-      .eq('id', routineId)
-      .eq('user_id', req.user.id)
-      .single();
-
-    if (error) {
+    } catch (error) {
       console.error('Get routine details error:', error);
-      throw error;
+      res.redirect('/tasks/my-routine?error=' + encodeURIComponent('Routine not found'));
     }
+  },
 
-    res.render('routine-details', {
-      routine,
-      moment: require('moment'),
-      weekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    });
+  postUpdateRoutine: async (req, res) => {
+    try {
+      const routineId = req.params.id;
+      const updates = {};
 
-  } catch (error) {
-    console.error('Get routine details error:', error);
-    res.redirect('/tasks/my-routine?error=' + encodeURIComponent('Routine not found'));
-  }
-},
-
-postUpdateRoutine: async (req, res) => {
-  try {
-    const routineId = req.params.id;
-    const updates = {};
-
-    ['title', 'description', 'start_time', 'end_time', 'repetition_type', 'weekly_days', 'specific_date'].forEach(field => {
-      if (req.body[field] !== undefined) {
-        if (field === 'weekly_days' && req.body[field]) {
-          updates[field] = Array.isArray(req.body[field]) 
-            ? req.body[field].map(day => parseInt(day))
-            : [parseInt(req.body[field])];
-        } else {
-          updates[field] = req.body[field] || null;
+      ['title', 'description', 'start_time', 'end_time', 'repetition_type', 'weekly_days', 'specific_date'].forEach(field => {
+        if (req.body[field] !== undefined) {
+          if (field === 'weekly_days' && req.body[field]) {
+            updates[field] = Array.isArray(req.body[field]) 
+              ? req.body[field].map(day => parseInt(day))
+              : [parseInt(req.body[field])];
+          } else {
+            updates[field] = req.body[field] || null;
+          }
         }
-      }
-    });
+      });
 
-    updates.updated_at = new Date().toISOString();
+      updates.updated_at = new Date().toISOString();
 
-    const { error } = await supabase
-      .from('routine_tasks')
-      .update(updates)
-      .eq('id', routineId)
-      .eq('user_id', req.user.id);
+      const { error } = await supabase
+        .from('routine_tasks')
+        .update(updates)
+        .eq('id', routineId)
+        .eq('user_id', req.user.id);
 
-    if (error) throw error;
+      if (error) throw error;
 
-    res.json({ success: true, message: 'Routine task updated successfully' });
+      res.json({ success: true, message: 'Routine task updated successfully' });
 
-  } catch (error) {
-    console.error('Update routine error:', error);
-    res.status(500).json({ error: 'Failed to update routine task' });
-  }
-},
-
-deleteRoutine: async (req, res) => {
-  try {
-    const routineId = req.params.id;
-
-    const { error } = await supabase
-      .from('routine_tasks')
-      .update({ is_active: false })
-      .eq('id', routineId)
-      .eq('user_id', req.user.id);
-
-    if (error) throw error;
-
-    res.json({ success: true, message: 'Routine task deleted successfully' });
-
-  } catch (error) {
-    console.error('Delete routine error:', error);
-    res.status(500).json({ error: 'Failed to delete routine task' });
-  }
-},
-
-getTeamRoutines: async (req, res) => {
-  try {
-    const { date } = req.query;
-    const selectedDate = date || require('moment')().format('YYYY-MM-DD');
-    const dayOfWeek = require('moment')(selectedDate).day();
-    
-    // Get all active routine tasks
-    const { data: allRoutines, error } = await supabase
-      .from('routine_tasks')
-      .select(`
-        *,
-        profiles!user_id(full_name, email)
-      `)
-      .eq('is_active', true)
-      .order('start_time', { ascending: true });
-
-    if (error) {
-      console.error('Team routines query error:', error);
+    } catch (error) {
+      console.error('Update routine error:', error);
+      res.status(500).json({ error: 'Failed to update routine task' });
     }
+  },
 
-    // Filter routines based on repetition type and selected date
-    const applicableRoutines = (allRoutines || []).filter(routine => {
-      if (routine.repetition_type === 'daily') {
-        return true;
-      } else if (routine.repetition_type === 'weekly') {
-        return routine.weekly_days && routine.weekly_days.includes(dayOfWeek);
-      } else if (routine.repetition_type === 'single') {
-        return routine.specific_date === selectedDate;
+  deleteRoutine: async (req, res) => {
+    try {
+      const routineId = req.params.id;
+
+      const { error } = await supabase
+        .from('routine_tasks')
+        .update({ is_active: false })
+        .eq('id', routineId)
+        .eq('user_id', req.user.id);
+
+      if (error) throw error;
+
+      res.json({ success: true, message: 'Routine task deleted successfully' });
+
+    } catch (error) {
+      console.error('Delete routine error:', error);
+      res.status(500).json({ error: 'Failed to delete routine task' });
+    }
+  },
+
+  getTeamRoutines: async (req, res) => {
+    try {
+      const { date } = req.query;
+      const selectedDate = date || require('moment')().format('YYYY-MM-DD');
+      const dayOfWeek = require('moment')(selectedDate).day();
+      
+      const { data: allRoutines, error } = await supabase
+        .from('routine_tasks')
+        .select(`
+          *,
+          profiles!user_id(full_name, email)
+        `)
+        .eq('is_active', true)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error('Team routines query error:', error);
       }
-      return false;
-    });
 
-    // Add user profile info to each routine
-    const routinesWithProfiles = applicableRoutines.map(routine => ({
-      ...routine,
-      user_profile: routine.profiles ? { full_name: routine.profiles.full_name } : { full_name: 'Unknown User' }
-    }));
+      const applicableRoutines = (allRoutines || []).filter(routine => {
+        if (routine.repetition_type === 'daily') {
+          return true;
+        } else if (routine.repetition_type === 'weekly') {
+          return routine.weekly_days && routine.weekly_days.includes(dayOfWeek);
+        } else if (routine.repetition_type === 'single') {
+          return routine.specific_date === selectedDate;
+        }
+        return false;
+      });
 
-    res.render('team-routines', {
-      routines: routinesWithProfiles,
-      selectedDate,
-      moment: require('moment'),
-      dayOfWeek,
-      error: error?.message || null
-    });
+      const routinesWithProfiles = applicableRoutines.map(routine => ({
+        ...routine,
+        user_profile: routine.profiles ? { full_name: routine.profiles.full_name } : { full_name: 'Unknown User' }
+      }));
 
-  } catch (error) {
-    console.error('Get team routines error:', error);
-    res.render('team-routines', {
-      routines: [],
-      selectedDate: require('moment')().format('YYYY-MM-DD'),
-      moment: require('moment'),
-      dayOfWeek: require('moment')().day(),
-      error: 'Failed to load team routines'
-    });
-  }
- },
+      res.render('team-routines', {
+        routines: routinesWithProfiles,
+        selectedDate,
+        moment: require('moment'),
+        dayOfWeek,
+        error: error?.message || null
+      });
+
+    } catch (error) {
+      console.error('Get team routines error:', error);
+      res.render('team-routines', {
+        routines: [],
+        selectedDate: require('moment')().format('YYYY-MM-DD'),
+        moment: require('moment'),
+        dayOfWeek: require('moment')().day(),
+        error: 'Failed to load team routines'
+      });
+    }
+  },
 
   // SCHEDULE ROUTES
   getSchedule: async (req, res) => {
@@ -518,7 +501,6 @@ getTeamRoutines: async (req, res) => {
       const { date } = req.query;
       const selectedDate = date || moment().format('YYYY-MM-DD');
       
-      // Get scheduled tasks for the selected date
       const { data: scheduledTasks } = await supabase
         .from('scheduled_tasks')
         .select(`
@@ -528,7 +510,6 @@ getTeamRoutines: async (req, res) => {
         .eq('date', selectedDate)
         .order('start_time', { ascending: true });
 
-      // Get team members for the team view
       const { data: teamMembers } = await supabase
         .from('profiles')
         .select('id, full_name, team')
@@ -574,7 +555,6 @@ getTeamRoutines: async (req, res) => {
         });
       }
 
-      // Check for time conflicts
       const { data: conflicts } = await supabase
         .from('scheduled_tasks')
         .select('*')
@@ -638,7 +618,7 @@ getTeamRoutines: async (req, res) => {
         .from('scheduled_tasks')
         .update(updates)
         .eq('id', taskId)
-        .eq('user_id', req.user.id); // Only allow users to update their own scheduled tasks
+        .eq('user_id', req.user.id);
 
       if (error) throw error;
 
@@ -658,7 +638,7 @@ getTeamRoutines: async (req, res) => {
         .from('scheduled_tasks')
         .delete()
         .eq('id', taskId)
-        .eq('user_id', req.user.id); // Only allow users to delete their own scheduled tasks
+        .eq('user_id', req.user.id);
 
       if (error) throw error;
 
@@ -669,11 +649,11 @@ getTeamRoutines: async (req, res) => {
       res.status(500).json({ error: 'Failed to delete scheduled task' });
     }
   },
-   checkUserAvailability: async (req, res) => {
+
+  checkUserAvailability: async (req, res) => {
     try {
       const { userId, date } = req.query;
       
-      // Check if user has a schedule for that date
       const { data: schedule, error: scheduleError } = await supabase
         .from('user_schedules')
         .select(`
@@ -684,7 +664,6 @@ getTeamRoutines: async (req, res) => {
         .eq('date', date)
         .single();
       
-      // Check if user has any personal events on that date
       const { data: events, error: eventsError } = await supabase
         .from('personal_events')
         .select('*')
@@ -700,7 +679,6 @@ getTeamRoutines: async (req, res) => {
         warning: null
       };
       
-      // Generate warning message
       if (!schedule && (!events || events.length === 0)) {
         availability.warning = 'User has no scheduled shift for this date';
       } else if (!schedule && events && events.length > 0) {
