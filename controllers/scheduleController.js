@@ -63,25 +63,34 @@ const scheduleController = {
   },
 
 getMyEvents: async (req, res) => {
+  console.log('*** getMyEvents function called ***');
+  console.log('User ID:', req.user.id);
+  
   try {
     const userId = req.user.id;
-    console.log('Current logged in user ID:', userId); // ADD THIS LINE
     
+    // Get ALL events first to debug
+    const { data: allEvents, error: allError } = await supabase
+      .from('personal_events')
+      .select('*');
+    
+    console.log('All events in DB:', allEvents);
+    console.log('All events error:', allError);
+    
+    // Get user-specific events
     const { data: events, error } = await supabase
       .from('personal_events')
-      .select(`
-        *,
-        approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
-      `)
+      .select('*')
       .eq('user_id', userId);
 
-    console.log('Database query error:', error); // ADD THIS LINE
-    console.log('Events found:', events); // ADD THIS LINE
+    console.log('User events:', events);
+    console.log('User events error:', error);
+    console.log('Events array length:', events ? events.length : 0);
 
     res.render('my-events', {
       title: 'My Events',
       events: events || [],
-      moment,
+      moment: require('moment'),
       error: null
     });
 
@@ -90,7 +99,7 @@ getMyEvents: async (req, res) => {
     res.render('my-events', {
       title: 'My Events',
       events: [],
-      moment,
+      moment: require('moment'),
       error: 'Failed to load events'
     });
   }
