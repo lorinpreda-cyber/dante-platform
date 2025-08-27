@@ -64,18 +64,30 @@ const scheduleController = {
 
 getMyEvents: async (req, res) => {
   console.log('*** getMyEvents function called ***');
-  console.log('User ID:', req.user.id);
+  console.log('User ID from req.user.id:', req.user.id);
+  console.log('Full user object:', req.user);
+  console.log('Profile object:', req.profile);
   
   try {
     const userId = req.user.id;
+    console.log('Using userId for query:', userId);
     
     // Get ALL events first to debug
     const { data: allEvents, error: allError } = await supabase
       .from('personal_events')
       .select('*');
     
+    console.log('=== ALL EVENTS DEBUG ===');
     console.log('All events in DB:', allEvents);
     console.log('All events error:', allError);
+    console.log('Number of events in DB:', allEvents ? allEvents.length : 0);
+    
+    if (allEvents && allEvents.length > 0) {
+      console.log('Event user_ids in DB:', allEvents.map(e => e.user_id));
+      console.log('Current user ID:', userId);
+      console.log('User ID type:', typeof userId);
+      console.log('Event user_id type:', typeof allEvents[0].user_id);
+    }
     
     // Get user-specific events
     const { data: events, error } = await supabase
@@ -83,9 +95,17 @@ getMyEvents: async (req, res) => {
       .select('*')
       .eq('user_id', userId);
 
-    console.log('User events:', events);
+    console.log('=== USER EVENTS DEBUG ===');
+    console.log('User events query result:', events);
     console.log('User events error:', error);
     console.log('Events array length:', events ? events.length : 0);
+    
+    // Manual check
+    if (allEvents && allEvents.length > 0) {
+      const manualMatch = allEvents.filter(event => event.user_id === userId);
+      console.log('Manual filter result:', manualMatch);
+      console.log('Manual filter count:', manualMatch.length);
+    }
 
     res.render('my-events', {
       title: 'My Events',
@@ -103,7 +123,7 @@ getMyEvents: async (req, res) => {
       error: 'Failed to load events'
     });
   }
-},
+ },
 
   postCreateEvent: async (req, res) => {
     try {
