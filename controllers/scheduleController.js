@@ -62,36 +62,39 @@ const scheduleController = {
     }
   },
 
-  getMyEvents: async (req, res) => {
-    try {
-      const userId = req.user.id;
-      
-      const { data: events } = await supabase
-        .from('personal_events')
-        .select(`
-          *,
-          approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
-        `)
-        .eq('user_id', userId) // FIXED: using user_id instead of created_by
-        .order('start_date', { ascending: false });
+getMyEvents: async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log('Current logged in user ID:', userId); // ADD THIS LINE
+    
+    const { data: events, error } = await supabase
+      .from('personal_events')
+      .select(`
+        *,
+        approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
+      `)
+      .eq('user_id', userId);
 
-      res.render('my-events', {
-        title: 'My Events',
-        events: events || [],
-        moment,
-        error: null
-      });
+    console.log('Database query error:', error); // ADD THIS LINE
+    console.log('Events found:', events); // ADD THIS LINE
 
-    } catch (error) {
-      console.error('My events error:', error);
-      res.render('my-events', {
-        title: 'My Events',
-        events: [],
-        moment,
-        error: 'Failed to load events'
-      });
-    }
-  },
+    res.render('my-events', {
+      title: 'My Events',
+      events: events || [],
+      moment,
+      error: null
+    });
+
+  } catch (error) {
+    console.error('My events error:', error);
+    res.render('my-events', {
+      title: 'My Events',
+      events: [],
+      moment,
+      error: 'Failed to load events'
+    });
+  }
+},
 
   postCreateEvent: async (req, res) => {
     try {
