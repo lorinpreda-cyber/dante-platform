@@ -4,6 +4,7 @@ const path = require('path');
 const moment = require('moment');
 require('dotenv').config();
 
+const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const taskRoutes = require('./routes/tasks');
@@ -26,6 +27,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.locals.moment = moment;
 
 // Routes
+app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/tasks', taskRoutes);

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use your existing neumorphism styles */
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Copy all your existing sidebar styles from other pages */
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+        }
+
+        .event-item {
+            background: var(--secondary-bg);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .event-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .event-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: var(--text-light);
+            border-color: #ef4444;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar (copy from your other pages) -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/my-routine" class="nav-link">My Routine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/team-routines" class="nav-link">Team Routines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/my-events" class="nav-link">My Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link active">Admin Panel</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role">ADMIN</div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Admin Dashboard</h1>
+            </div>
+
+            <!-- Pending Events for Approval -->
+            <div class="card">
+                <h3 class="card-title">Pending Event Approvals (<%= pendingEvents.length %>)</h3>
+                
+                <% if (pendingEvents.length === 0) { %>
+                <div class="empty-state">
+                    <h4>No pending events</h4>
+                    <p>All events have been reviewed.</p>
+                </div>
+                <% } else { %>
+                
+                <% pendingEvents.forEach(event => { %>
+                <div class="event-item">
+                    <div class="event-header">
+                        <div class="event-title"><%= event.title %></div>
+                        <span class="status-badge status-pending">PENDING</span>
+                    </div>
+                    
+                    <div class="event-meta">
+                        <strong>Requested by:</strong> <%= event.user_profile ? event.user_profile.full_name : 'Unknown' %>
+                    </div>
+                    
+                    <div class="event-meta">
+                        <strong>Type:</strong> <%= event.event_type.replace('_', ' ').toUpperCase() %>
+                    </div>
+                    
+                    <div class="event-meta">
+                        <strong>Date:</strong> 
+                        <% if (event.start_date === event.end_date) { %>
+                            <%= moment(event.start_date).format('MMM DD, YYYY') %>
+                        <% } else { %>
+                            <%= moment(event.start_date).format('MMM DD') %> - <%= moment(event.end_date).format('MMM DD, YYYY') %>
+                        <% } %>
+                    </div>
+                    
+                    <% if (event.description) { %>
+                    <div class="event-meta">
+                        <strong>Description:</strong> <%= event.description %>
+                    </div>
+                    <% } %>
+                    
+                    <div class="event-meta">
+                        <strong>Submitted:</strong> <%= moment(event.created_at).format('MMM DD, YYYY HH:mm') %>
+                    </div>
+                    
+                    <div class="event-actions">
+                        <button class="btn btn-success" onclick="approveEvent('<%= event.id %>', 'approve')">
+                            Approve
+                        </button>
+                        <button class="btn btn-danger" onclick="approveEvent('<%= event.id %>', 'deny')">
+                            Deny
+                        </button>
+                    </div>
+                </div>
+                <% }); %>
+                
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function approveEvent(eventId, action) {
+            const actionText = action === 'approve' ? 'approve' : 'deny';
+            
+            if (!confirm(`Are you sure you want to ${actionText} this event?`)) return;
+            
+            try {
+                const response = await fetch(`/admin/events/${eventId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Event ${actionText}d successfully!`);
+                    location.reload();
+                } else {
+                    alert(`Failed to ${actionText} event`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(`Failed to ${actionText} event`);
+            }
+        }
+    </script>
+</body>
+</html>
