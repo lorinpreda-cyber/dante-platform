@@ -1,62 +1,198 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%- title %> - Dante Platform</title>
-
+    <title>My Events - Dante Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .events-container {
-            padding: 2rem;
-            background: var(--background-color, #f0f2f5);
+        :root {
+            --primary-bg: #e8e8e8;
+            --secondary-bg: #f0f0f0;
+            --button-bg: #d8d8d8;
+            --button-border: #d0d0d0;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-light: #ffffff;
+            --accent-color: #4285f4;
+            --border-color: #d0d0d0;
+            --shadow-raised: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+            --shadow-pressed: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #c5c5c5, inset -4px -4px 8px #ffffff;
+            --shadow-subtle: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
-        .events-header {
-            background: var(--surface-color, #ffffff);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dante-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dante-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary-bg);
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 8px 8px 16px #c5c5c5, -8px -8px 16px #ffffff;
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .user-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-inset);
+            text-align: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .header-title {
-            font-size: 1.5rem;
+        .page-title {
+            font-size: 32px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
+            margin: 0;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
+        .card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 0.75rem 1.5rem;
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 14px;
             font-weight: 500;
             text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-raised);
+            transition: var(--transition);
+            text-align: center;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
         }
 
-        .action-btn.secondary {
-            background: #6b7280;
-            color: white;
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-light);
+            border-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background: #10b981;
+            color: var(--text-light);
+            border-color: #10b981;
         }
 
         .events-grid {
@@ -66,156 +202,83 @@
         }
 
         .event-card {
-            background: #ffffff;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            position: relative;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
 
         .event-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        }
-
-        .event-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
+            box-shadow: var(--shadow-raised);
         }
 
         .event-title {
-            font-size: 1.1rem;
+            font-size: 18px;
             font-weight: 600;
-            color: #333;
-            margin: 0;
+            color: var(--text-primary);
+            margin: 0 0 12px 0;
         }
 
-        .event-type {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .event-type.vacation {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .event-type.sick_leave {
-            background: #ef4444;
-            color: white;
-        }
-
-        .event-type.appointment {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .event-type.personal {
-            background: #06b6d4;
-            color: white;
-        }
-
-        .event-type.training {
-            background: #10b981;
-            color: white;
-        }
-
-        .event-dates {
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .event-times {
-            color: #6b7280;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+        .event-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
 
         .event-description {
-            color: #333;
-            margin-bottom: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
             line-height: 1.5;
-        }
-
-        .event-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.denied {
-            background: #fee2e2;
-            color: #dc2626;
         }
 
         .event-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
         .event-btn {
-            background: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            color: #374151;
+            font-size: 12px;
+            transition: var(--transition);
         }
 
         .event-btn:hover {
-            background: #f3f4f6;
+            transform: translateY(-1px);
         }
 
         .event-btn.danger {
-            border-color: #fca5a5;
-            color: #dc2626;
+            background: #ef4444;
+            color: var(--text-light);
+            border-color: #ef4444;
         }
 
-        .event-btn.danger:hover {
-            background: #fee2e2;
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-denied { background: #fee2e2; color: #dc2626; }
 
         .empty-state {
             text-align: center;
-            padding: 3rem 2rem;
-            color: #6b7280;
-            grid-column: 1 / -1;
+            padding: 40px;
+            color: var(--text-secondary);
         }
 
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* Modal styles */
+        /* Modal styles from your original file */
         .modal {
             position: fixed;
             top: 0;
@@ -238,14 +301,14 @@
         }
 
         .modal-content {
-            background: #ffffff;
-            border-radius: 20px;
+            background: var(--primary-bg);
+            border-radius: 16px;
             padding: 2rem;
             max-width: 500px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-raised);
         }
 
         .modal-header {
@@ -258,28 +321,21 @@
         .modal-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             margin: 0;
         }
 
         .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            padding: 0;
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            border-radius: 50%;
             width: 30px;
             height: 30px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .close-btn:hover {
-            background: #f3f4f6;
-            color: #333;
+            cursor: pointer;
+            box-shadow: var(--shadow-raised);
         }
 
         .form-group {
@@ -290,26 +346,25 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            background: #f9fafb;
-            color: #333;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
             font-size: 1rem;
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
             box-sizing: border-box;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: #ffffff;
+            border-color: var(--accent-color);
         }
 
         .form-row {
@@ -332,115 +387,122 @@
         }
 
         @media (max-width: 768px) {
-            .events-container {
-                padding: 1rem;
-            }
-
-            .events-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .header-actions {
-                justify-content: center;
-            }
-
-            .events-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .events-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="events-container" id="eventsData" data-events='<%- JSON.stringify(events) %>'>
-        <!-- Header -->
-        <div class="events-header">
-            <h1 class="header-title">My Personal Events</h1>
-            <div class="header-actions">
-                <button class="action-btn" onclick="showCreateModal()">
-                    Add New Event
-                </button>
-                <a href="/schedule" class="action-btn secondary">
-                    Back to Schedule
-                </a>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="dante-logo">
+                <h1>DANTE</h1>
+                <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Team Platform</p>
             </div>
-        </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks" class="nav-link <%= title && title.includes('Task') ? 'active' : '' %>">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/my-routine" class="nav-link <%= title && title.includes('Routine') ? 'active' : '' %>">My Routine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/tasks/team-routines" class="nav-link <%= title === 'Team Routines' ? 'active' : '' %>">Team Routines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule" class="nav-link <%= title && title.includes('Schedule') ? 'active' : '' %>">Schedule</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/schedule/my-events" class="nav-link <%= title === 'My Events' ? 'active' : '' %>">My Events</a>
+                    </li>
+                    <% if (typeof profile !== 'undefined' && profile && profile.role === 'admin') { %>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link <%= title && title.includes('Admin') ? 'active' : '' %>">Admin Panel</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
 
-        <!-- Events Grid -->
-        <div class="events-grid">
-            <% if (events.length === 0) { %>
-                <div class="empty-state">
-                    <div class="empty-icon">📅</div>
-                    <h3>No events yet</h3>
-                    <p>You haven't created any personal events. Click "Add New Event" to get started.</p>
+            <div class="user-info">
+                <div class="user-name"><%= typeof profile !== 'undefined' && profile ? profile.full_name : 'User' %></div>
+                <div class="user-role"><%= typeof profile !== 'undefined' && profile ? profile.role : 'member' %></div>
+                <form action="/auth/logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">My Personal Events</h1>
+                <div>
+                    <button class="btn btn-primary" onclick="showCreateModal()">Add New Event</button>
+                    <a href="/schedule" class="btn btn-secondary">Back to Schedule</a>
                 </div>
-            <% } else { %>
-                <% events.forEach(event => { %>
-                    <div class="event-card">
-                        <div class="event-header">
-                            <h3 class="event-title"><%- event.title %></h3>
-                            <span class="event-type <%- event.event_type %>">
-                                <%- event.event_type.replace('_', ' ') %>
-                            </span>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="card">
+                <div class="events-grid" id="eventsData" data-events='<%- JSON.stringify(events) %>'>
+                    <% if (events.length === 0) { %>
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <h3>No events yet</h3>
+                            <p>You haven't created any personal events. Click "Add New Event" to get started.</p>
                         </div>
-                        
-                        <div class="event-dates">
-                            <% if (event.start_date === event.end_date) { %>
-                                <%- moment(event.start_date).format('DD MMMM YYYY') %>
-                            <% } else { %>
-                                <%- moment(event.start_date).format('DD MMM') %> - <%- moment(event.end_date).format('DD MMM YYYY') %>
-                            <% } %>
-                        </div>
-                        
-                        <% if (!event.is_all_day && event.start_time) { %>
-                            <div class="event-times">
-                                <%- event.start_time %> - <%- event.end_time || 'End time not set' %>
+                    <% } else { %>
+                        <% events.forEach(event => { %>
+                            <div class="event-card">
+                                <div class="event-title"><%= event.title %></div>
+                                
+                                <div class="event-meta">
+                                    <span class="status-badge status-<%= event.status %>"><%= event.status.toUpperCase() %></span>
+                                    <% if (event.start_date === event.end_date) { %>
+                                        <%= moment(event.start_date).format('DD MMMM YYYY') %>
+                                    <% } else { %>
+                                        <%= moment(event.start_date).format('DD MMM') %> - <%= moment(event.end_date).format('DD MMM YYYY') %>
+                                    <% } %>
+                                </div>
+                                
+                                <% if (!event.is_all_day && event.start_time) { %>
+                                <div class="event-meta">
+                                    <%= event.start_time %> - <%= event.end_time || 'End time not set' %>
+                                </div>
+                                <% } else { %>
+                                <div class="event-meta">All Day</div>
+                                <% } %>
+                                
+                                <% if (event.description) { %>
+                                <div class="event-description">
+                                    <%= event.description %>
+                                </div>
+                                <% } %>
+                                
+                                <div class="event-actions">
+                                    <button class="event-btn" data-event-id="<%= event.id %>" onclick="editEvent(this.dataset.eventId)">
+                                        Edit
+                                    </button>
+                                    <button class="event-btn danger" data-event-id="<%= event.id %>" onclick="deleteEvent(this.dataset.eventId)">
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
-                        <% } else { %>
-                            <div class="event-times">All Day</div>
-                        <% } %>
-                        
-                        <% if (event.description) { %>
-                            <div class="event-description">
-                                <%- event.description %>
-                            </div>
-                        <% } %>
-                        
-                        <div class="event-status">
-                            <span class="status-badge <%- event.status %>">
-                                <%- event.status.charAt(0).toUpperCase() + event.status.slice(1) %>
-                            </span>
-                            <% if (event.approved_by_profile && event.approved_at) { %>
-                                <small>
-                                    by <%- event.approved_by_profile.full_name %> 
-                                    on <%- moment(event.approved_at).format('DD/MM/YYYY') %>
-                                </small>
-                            <% } %>
-                        </div>
-                        
-                        <div class="event-actions">
-                            <button class="event-btn" 
-                                    data-event-id="<%- event.id %>"
-                                    onclick="editEvent(this.dataset.eventId)">
-                                Edit
-                            </button>
-                            <button class="event-btn danger" 
-                                    data-event-id="<%- event.id %>"
-                                    onclick="deleteEvent(this.dataset.eventId)">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                <% }) %>
-            <% } %>
-        </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Event Modal -->
+    <!-- Event Modal (keeping your original modal code) -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -506,10 +568,10 @@
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="action-btn secondary" onclick="closeModal()">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
                         Cancel
                     </button>
-                    <button type="submit" class="action-btn" id="submitBtn">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         Create Event
                     </button>
                 </div>
@@ -518,12 +580,13 @@
     </div>
 
     <script>
-        // Read events data from container attribute
+        // Your original JavaScript code remains the same
         const eventsContainer = document.getElementById('eventsData');
         let eventsData = [];
         
         try {
             eventsData = JSON.parse(eventsContainer.dataset.events);
+            console.log('Events loaded:', eventsData); // Debug log
         } catch (error) {
             console.error('Error parsing events data:', error);
             eventsData = [];
@@ -531,7 +594,6 @@
 
         let editingEventId = null;
 
-        // Show create modal
         function showCreateModal() {
             editingEventId = null;
             document.getElementById('modalTitle').textContent = 'Add New Event';
@@ -539,7 +601,6 @@
             document.getElementById('eventForm').reset();
             document.getElementById('eventId').value = '';
             
-            // Set default dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('startDate').value = today;
             document.getElementById('endDate').value = today;
@@ -548,7 +609,6 @@
             showModal();
         }
 
-        // Edit event using event ID from data attribute
         function editEvent(eventId) {
             const event = eventsData.find(e => e.id === eventId);
             if (!event) return;
@@ -557,7 +617,6 @@
             document.getElementById('modalTitle').textContent = 'Edit Event';
             document.getElementById('submitBtn').textContent = 'Update Event';
             
-            // Populate form
             document.getElementById('eventId').value = event.id;
             document.getElementById('title').value = event.title;
             document.getElementById('eventType').value = event.event_type;
@@ -572,11 +631,8 @@
             showModal();
         }
 
-        // Delete event using event ID from data attribute
         async function deleteEvent(eventId) {
-            if (!confirm('Are you sure you want to delete this event?')) {
-                return;
-            }
+            if (!confirm('Are you sure you want to delete this event?')) return;
             
             try {
                 const response = await fetch(`/schedule/events/${eventId}`, {
@@ -596,17 +652,14 @@
             }
         }
 
-        // Show modal
         function showModal() {
             document.getElementById('eventModal').classList.add('show');
         }
 
-        // Close modal
         function closeModal() {
             document.getElementById('eventModal').classList.remove('show');
         }
 
-        // Toggle time fields
         function toggleTimeFields() {
             const isAllDay = document.getElementById('isAllDay').checked;
             const timeFields = document.getElementById('timeFields');
@@ -618,7 +671,6 @@
             }
         }
 
-        // Handle form submission
         document.getElementById('eventForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -634,7 +686,6 @@
                 description: formData.get('description')
             };
             
-            // Validation
             if (!eventData.title || !eventData.eventType || !eventData.startDate || !eventData.endDate) {
                 alert('Please fill in all required fields');
                 return;
@@ -670,14 +721,12 @@
             }
         });
 
-        // Close modal when clicking outside
         document.getElementById('eventModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // ESC key to close modal
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
