@@ -7,14 +7,14 @@ const scheduleController = {
       const userId = req.user.id;
       const today = moment().format('YYYY-MM-DD');
       
-      // Get today's events
+      // Get today's events - FIXED: using user_id instead of created_by
       const { data: todaysEvents } = await supabase
         .from('personal_events')
         .select(`
           *,
           approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
         `)
-        .eq('created_by', userId)
+        .eq('user_id', userId)
         .lte('start_date', today)
         .gte('end_date', today)
         .order('start_time', { ascending: true });
@@ -27,7 +27,7 @@ const scheduleController = {
           *,
           approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
         `)
-        .eq('created_by', userId)
+        .eq('user_id', userId)
         .gt('start_date', today)
         .lte('start_date', nextWeek)
         .order('start_date', { ascending: true });
@@ -36,7 +36,7 @@ const scheduleController = {
       const { data: pendingEvents } = await supabase
         .from('personal_events')
         .select('*')
-        .eq('created_by', userId)
+        .eq('user_id', userId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -72,7 +72,7 @@ const scheduleController = {
           *,
           approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
         `)
-        .eq('created_by', userId)
+        .eq('user_id', userId) // FIXED: using user_id instead of created_by
         .order('start_date', { ascending: false });
 
       res.render('my-events', {
@@ -107,10 +107,11 @@ const scheduleController = {
         description
       } = req.body;
 
-      await supabase
+      // FIXED: using user_id instead of created_by and matching your table schema
+      const { data, error } = await supabase
         .from('personal_events')
         .insert({
-          created_by: userId,
+          user_id: userId, // FIXED: changed from created_by to user_id
           title: title.trim(),
           event_type: eventType,
           start_date: startDate,
@@ -122,6 +123,12 @@ const scheduleController = {
           status: 'pending'
         });
 
+      if (error) {
+        console.error('Database insert error:', error);
+        return res.status(500).json({ success: false, message: `Database error: ${error.message}` });
+      }
+
+      console.log('Event created successfully:', data);
       res.json({ success: true, message: 'Event created successfully' });
 
     } catch (error) {
@@ -146,7 +153,7 @@ const scheduleController = {
         description
       } = req.body;
 
-      await supabase
+      const { error } = await supabase
         .from('personal_events')
         .update({
           title: title.trim(),
@@ -160,7 +167,12 @@ const scheduleController = {
           updated_at: new Date().toISOString()
         })
         .eq('id', eventId)
-        .eq('created_by', userId);
+        .eq('user_id', userId); // FIXED: using user_id instead of created_by
+
+      if (error) {
+        console.error('Update error:', error);
+        return res.status(500).json({ success: false, message: error.message });
+      }
 
       res.json({ success: true, message: 'Event updated successfully' });
 
@@ -175,11 +187,16 @@ const scheduleController = {
       const eventId = req.params.id;
       const userId = req.user.id;
 
-      await supabase
+      const { error } = await supabase
         .from('personal_events')
         .delete()
         .eq('id', eventId)
-        .eq('created_by', userId);
+        .eq('user_id', userId); // FIXED: using user_id instead of created_by
+
+      if (error) {
+        console.error('Delete error:', error);
+        return res.status(500).json({ success: false, message: error.message });
+      }
 
       res.json({ success: true, message: 'Event deleted successfully' });
 
