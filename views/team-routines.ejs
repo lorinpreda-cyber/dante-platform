@@ -298,6 +298,86 @@
             opacity: 0.9;
         }
 
+        /* New styles for personal events section */
+        .routine-item {
+            background: var(--secondary-bg);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .routine-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 8px #c5c5c5, -4px -4px 8px #ffffff;
+        }
+
+        .routine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .routine-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .routine-time {
+            font-weight: 500;
+            color: var(--accent-color);
+            font-size: 14px;
+        }
+
+        .routine-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        .routine-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .routine-repetition {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .repetition-daily {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .repetition-weekly {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .repetition-single {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Event specific styles */
+        .event-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -340,6 +420,15 @@
             }
             .routine-timeline {
                 grid-template-columns: 60px 1fr;
+            }
+            .routine-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .routine-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
         }
     </style>
@@ -434,6 +523,49 @@
                 
                 <% } %>
             </div>
+
+            <!-- NEW: Team Personal Events Section -->
+            <% if (typeof teamEvents !== 'undefined' && teamEvents && teamEvents.length > 0) { %>
+            <div class="card">
+                <h3 class="card-title">
+                    Team Personal Events - <%= moment(selectedDate).format('dddd, MMMM DD') %>
+                    <span style="color: var(--text-secondary); font-weight: normal; font-size: 14px;">
+                        (<%= teamEvents.length %> approved events)
+                    </span>
+                </h3>
+                
+                <% teamEvents.forEach(event => { %>
+                <div class="routine-item">
+                    <div class="routine-header">
+                        <h4 class="routine-title"><%= event.title %></h4>
+                        <span class="routine-time">
+                            <% if (!event.is_all_day && event.start_time) { %>
+                                <%= event.start_time %> - <%= event.end_time || 'End time not set' %>
+                            <% } else { %>
+                                All Day
+                            <% } %>
+                        </span>
+                    </div>
+                    
+                    <div class="routine-description">
+                        <strong><%= event.user_profile.full_name %></strong> - <%= event.event_type.replace('_', ' ').toUpperCase() %>
+                        <% if (event.description) { %>
+                            <br><%= event.description %>
+                        <% } %>
+                    </div>
+                    
+                    <div class="routine-meta">
+                        <span class="routine-repetition event-badge">APPROVED EVENT</span>
+                        <% if (event.start_date !== event.end_date) { %>
+                        <span style="color: var(--text-secondary);">
+                            <%= moment(event.start_date).format('MMM DD') %> - <%= moment(event.end_date).format('MMM DD') %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } %>
         </main>
     </div>
 

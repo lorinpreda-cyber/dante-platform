@@ -4,15 +4,33 @@ const moment = require('moment');
 const adminController = {
   getDashboard: async (req, res) => {
     try {
-      // Get pending events that need approval
-      const { data: pendingEvents } = await supabase
+      // Get pending events - FIXED: Removed the problematic join
+      const { data: pendingEvents, error } = await supabase
         .from('personal_events')
-        .select(`
-          *,
-          user_profile:profiles!personal_events_user_id_fkey(full_name, email)
-        `)
+        .select('*')  // Removed the join to profiles
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
+
+      console.log('Pending events query error:', error);
+      console.log('Pending events found:', pendingEvents);
+
+      // If we have pending events, get user details separately
+      let eventsWithUsers = [];
+      if (pendingEvents && pendingEvents.length > 0) {
+        for (const event of pendingEvents) {
+          // Get user profile for each event
+          const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('full_name, email')
+            .eq('id', event.user_id)
+            .single();
+          
+          eventsWithUsers.push({
+            ...event,
+            user_profile: userProfile || { full_name: 'Unknown', email: 'Unknown' }
+          });
+        }
+      }
 
       // Get all team members
       const { data: teamMembers } = await supabase
@@ -23,7 +41,7 @@ const adminController = {
 
       res.render('admin/dashboard', {
         title: 'Admin Dashboard',
-        pendingEvents: pendingEvents || [],
+        pendingEvents: eventsWithUsers || [],
         teamMembers: teamMembers || [],
         moment,
         error: null
@@ -44,7 +62,7 @@ const adminController = {
   postApproveEvent: async (req, res) => {
     try {
       const eventId = req.params.id;
-      const { action } = req.body; // 'approve' or 'deny'
+      const { action } = req.body;
 
       const status = action === 'approve' ? 'approved' : 'denied';
       

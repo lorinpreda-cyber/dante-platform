@@ -382,6 +382,7 @@ const taskController = {
       const selectedDate = date || moment().format('YYYY-MM-DD');
       const dayOfWeek = moment(selectedDate).day();
       
+      // Get routine tasks
       const { data: allRoutines } = await supabase
         .from('routine_tasks')
         .select(`
@@ -391,6 +392,7 @@ const taskController = {
         .eq('is_active', true)
         .order('start_time', { ascending: true });
 
+      // Filter applicable routines
       const applicableRoutines = (allRoutines || []).filter(routine => {
         if (routine.repetition_type === 'daily') {
           return true;
@@ -407,9 +409,36 @@ const taskController = {
         user_profile: routine.profiles ? { full_name: routine.profiles.full_name } : { full_name: 'Unknown User' }
       }));
 
+      // NEW: Get team's approved personal events for the selected date
+      const { data: teamEvents } = await supabase
+        .from('personal_events')
+        .select('*')
+        .eq('status', 'approved')
+        .lte('start_date', selectedDate)
+        .gte('end_date', selectedDate)
+        .order('start_time', { ascending: true });
+
+      // Get user profiles for events
+      let eventsWithProfiles = [];
+      if (teamEvents && teamEvents.length > 0) {
+        for (const event of teamEvents) {
+          const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', event.user_id)
+            .single();
+          
+          eventsWithProfiles.push({
+            ...event,
+            user_profile: userProfile || { full_name: 'Unknown User' }
+          });
+        }
+      }
+
       res.render('team-routines', {
         title: 'Team Routines',
         routines: routinesWithProfiles,
+        teamEvents: eventsWithProfiles,
         selectedDate,
         moment,
         dayOfWeek,
@@ -417,9 +446,11 @@ const taskController = {
       });
 
     } catch (error) {
+      console.error('Team routines error:', error);
       res.render('team-routines', {
         title: 'Team Routines',
         routines: [],
+        teamEvents: [],
         selectedDate: moment().format('YYYY-MM-DD'),
         moment,
         dayOfWeek: moment().day(),

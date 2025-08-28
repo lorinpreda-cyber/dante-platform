@@ -7,27 +7,23 @@ const scheduleController = {
       const userId = req.user.id;
       const today = moment().format('YYYY-MM-DD');
       
-      // Get today's events - FIXED: using user_id instead of created_by
+      // Get today's events - FIXED: only show approved events and removed problematic join
       const { data: todaysEvents } = await supabase
         .from('personal_events')
-        .select(`
-          *,
-          approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
-        `)
+        .select('*')
         .eq('user_id', userId)
+        .eq('status', 'approved')
         .lte('start_date', today)
         .gte('end_date', today)
         .order('start_time', { ascending: true });
 
-      // Get upcoming events (next 7 days)
+      // Get upcoming events (next 7 days) - FIXED: only show approved events
       const nextWeek = moment().add(7, 'days').format('YYYY-MM-DD');
       const { data: upcomingEvents } = await supabase
         .from('personal_events')
-        .select(`
-          *,
-          approved_by_profile:profiles!personal_events_approved_by_fkey(full_name)
-        `)
+        .select('*')
         .eq('user_id', userId)
+        .eq('status', 'approved')
         .gt('start_date', today)
         .lte('start_date', nextWeek)
         .order('start_date', { ascending: true });
@@ -62,68 +58,37 @@ const scheduleController = {
     }
   },
 
-getMyEvents: async (req, res) => {
-  console.log('*** getMyEvents function called ***');
-  console.log('User ID from req.user.id:', req.user.id);
-  console.log('Full user object:', req.user);
-  console.log('Profile object:', req.profile);
-  
-  try {
-    const userId = req.user.id;
-    console.log('Using userId for query:', userId);
-    
-    // Get ALL events first to debug
-    const { data: allEvents, error: allError } = await supabase
-      .from('personal_events')
-      .select('*');
-    
-    console.log('=== ALL EVENTS DEBUG ===');
-    console.log('All events in DB:', allEvents);
-    console.log('All events error:', allError);
-    console.log('Number of events in DB:', allEvents ? allEvents.length : 0);
-    
-    if (allEvents && allEvents.length > 0) {
-      console.log('Event user_ids in DB:', allEvents.map(e => e.user_id));
-      console.log('Current user ID:', userId);
-      console.log('User ID type:', typeof userId);
-      console.log('Event user_id type:', typeof allEvents[0].user_id);
+  getMyEvents: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Get user-specific events
+      const { data: events, error } = await supabase
+        .from('personal_events')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('My events error:', error);
+      }
+
+      res.render('my-events', {
+        title: 'My Events',
+        events: events || [],
+        moment: require('moment'),
+        error: null
+      });
+
+    } catch (error) {
+      console.error('My events error:', error);
+      res.render('my-events', {
+        title: 'My Events',
+        events: [],
+        moment: require('moment'),
+        error: 'Failed to load events'
+      });
     }
-    
-    // Get user-specific events
-    const { data: events, error } = await supabase
-      .from('personal_events')
-      .select('*')
-      .eq('user_id', userId);
-
-    console.log('=== USER EVENTS DEBUG ===');
-    console.log('User events query result:', events);
-    console.log('User events error:', error);
-    console.log('Events array length:', events ? events.length : 0);
-    
-    // Manual check
-    if (allEvents && allEvents.length > 0) {
-      const manualMatch = allEvents.filter(event => event.user_id === userId);
-      console.log('Manual filter result:', manualMatch);
-      console.log('Manual filter count:', manualMatch.length);
-    }
-
-    res.render('my-events', {
-      title: 'My Events',
-      events: events || [],
-      moment: require('moment'),
-      error: null
-    });
-
-  } catch (error) {
-    console.error('My events error:', error);
-    res.render('my-events', {
-      title: 'My Events',
-      events: [],
-      moment: require('moment'),
-      error: 'Failed to load events'
-    });
-  }
- },
+  },
 
   postCreateEvent: async (req, res) => {
     try {
@@ -139,11 +104,10 @@ getMyEvents: async (req, res) => {
         description
       } = req.body;
 
-      // FIXED: using user_id instead of created_by and matching your table schema
       const { data, error } = await supabase
         .from('personal_events')
         .insert({
-          user_id: userId, // FIXED: changed from created_by to user_id
+          user_id: userId,
           title: title.trim(),
           event_type: eventType,
           start_date: startDate,
@@ -199,7 +163,7 @@ getMyEvents: async (req, res) => {
           updated_at: new Date().toISOString()
         })
         .eq('id', eventId)
-        .eq('user_id', userId); // FIXED: using user_id instead of created_by
+        .eq('user_id', userId);
 
       if (error) {
         console.error('Update error:', error);
@@ -223,7 +187,7 @@ getMyEvents: async (req, res) => {
         .from('personal_events')
         .delete()
         .eq('id', eventId)
-        .eq('user_id', userId); // FIXED: using user_id instead of created_by
+        .eq('user_id', userId);
 
       if (error) {
         console.error('Delete error:', error);

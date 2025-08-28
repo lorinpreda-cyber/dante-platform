@@ -17,26 +17,17 @@ const authMiddleware = async (req, res, next) => {
       return res.redirect('/auth/login');
     }
 
-    // Try to get user profile with error handling
+    // Get user profile - FIXED: Removed team relationship
     let profile = null;
     try {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('*, team:teams(*)')
+        .select('*')  // CHANGED: Removed team relationship
         .eq('id', user.id)
-        .maybeSingle(); // Use maybeSingle instead of single
-
-      // ADD THESE DEBUG LINES:
-      console.log('=== AUTH MIDDLEWARE DEBUG ===');
-      console.log('User ID:', user.id);
-      console.log('Profile query error:', profileError);
-      console.log('Profile data from DB:', profileData);
-      console.log('=== END DEBUG ===');
+        .maybeSingle();
 
       if (profileError) {
         console.error('Profile fetch error:', profileError.message);
-        console.log('FALLBACK: Using basic profile due to profileError'); // ADD THIS
-        // Create a basic profile object if database fails
         profile = {
           id: user.id,
           email: user.email,
@@ -46,8 +37,7 @@ const authMiddleware = async (req, res, next) => {
           is_active: true
         };
       } else if (!profileData) {
-        // Profile doesn't exist, create basic one
-        console.log('FALLBACK: No profile found, creating basic profile'); // ADD THIS
+        console.log('No profile found, creating basic profile');
         profile = {
           id: user.id,
           email: user.email,
@@ -57,13 +47,10 @@ const authMiddleware = async (req, res, next) => {
           is_active: true
         };
       } else {
-        console.log('SUCCESS: Using profile from database'); // ADD THIS
         profile = profileData;
       }
     } catch (dbError) {
       console.error('Database connection error:', dbError.message);
-      console.log('FALLBACK: Using basic profile due to dbError'); // ADD THIS
-      // Fallback profile
       profile = {
         id: user.id,
         email: user.email,
@@ -73,9 +60,6 @@ const authMiddleware = async (req, res, next) => {
         is_active: true
       };
     }
-
-    console.log('Final profile object:', profile); // ADD THIS
-    console.log('Final profile role:', profile.role); // ADD THIS
 
     // Set user data in request
     req.user = user;
